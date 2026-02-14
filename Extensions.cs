@@ -1,0 +1,79 @@
+﻿using System.Text;
+using Styx;
+using Styx.Logic;
+using Styx.WoWInternals;
+using Styx.WoWInternals.WoWObjects;
+
+namespace Singular
+{
+    internal static class Extensions
+    {
+
+        public static bool Between(this double distance, double min, double max)
+        {
+            return distance >= min && distance <= max;
+        }
+
+        /// <summary>
+        ///   A string extension method that turns a Camel-case string into a spaced string. (Example: SomeCamelString -> Some Camel String)
+        /// </summary>
+        /// <remarks>
+        ///   Created 2/7/2011.
+        /// </remarks>
+        /// <param name = "str">The string to act on.</param>
+        /// <returns>.</returns>
+        public static string CamelToSpaced(this string str)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if (char.IsUpper(c))
+                {
+                    sb.Append(' ');
+                }
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        public static string SafeName(this WoWObject obj)
+        {
+            if (obj.IsMe)
+            {
+                return "Myself";
+            }
+
+            string name;
+            if (obj is WoWPlayer)
+            {
+                if (RaFHelper.Leader == obj)
+                    return "Tank";
+
+                name = ((WoWPlayer)obj).Class.ToString();
+            }
+            else if (obj is WoWUnit && obj.ToUnit().IsPet)
+            {
+                name = "Pet";
+            }
+            else
+            {
+                name = obj.Name;
+            }
+
+            return name;
+        }
+
+        public static bool IsWanding(this LocalPlayer me)
+        {
+            return StyxWoW.Me.AutoRepeatingSpellId == 5019;
+        }
+
+        // WotLK QC: Dead code — offset 0x9FC is from Cata 4.3.4 client, wrong for WotLK 3.3.5a.
+        // This method is never called; Singular uses WoWUnit.CanInterruptCurrentSpellCast (Lua-based) instead.
+        // Keeping commented out for reference.
+        //public static bool CanInterrupt(this WoWUnit u)
+        //{
+        //    return (ObjectManager.Wow.Read<uint>(u.BaseAddress + 0x9F8 + 0x4) & 8) != 0;
+        //}
+    }
+}
