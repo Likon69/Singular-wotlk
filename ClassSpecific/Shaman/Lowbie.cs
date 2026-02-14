@@ -7,6 +7,7 @@ using Singular.Helpers;
 using Singular.Managers;
 using Styx;
 using Styx.Combat.CombatRoutine;
+using Styx.Logic.Combat;
 using TreeSharp;
 
 namespace Singular.ClassSpecific.Shaman
