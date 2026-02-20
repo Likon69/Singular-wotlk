@@ -20,6 +20,9 @@ namespace Singular.ClassSpecific.Mage
         {
             return new PrioritySelector(
                 Safers.EnsureTarget(),
+                // Racial buffs
+                Spell.BuffSelf("Blood Fury", ret => SpellManager.HasSpell("Blood Fury")),
+                Spell.BuffSelf("Berserking", ret => SpellManager.HasSpell("Berserking")),
                 Common.CreateStayAwayFromFrozenTargetsBehavior(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
