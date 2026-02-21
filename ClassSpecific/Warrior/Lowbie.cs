@@ -4,6 +4,7 @@ using Singular.Managers;
 
 using Styx;
 using Styx.Combat.CombatRoutine;
+using Styx.Logic.Combat;
 
 using TreeSharp;
 
@@ -31,6 +32,12 @@ namespace Singular.ClassSpecific.Warrior
                 // Auto Attack
                 Helpers.Common.CreateAutoAttack(false),
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
+                // Offensive racials / buffs (follow Singular patterns)
+                Spell.BuffSelf("Blood Fury", ret => SpellManager.HasSpell("Blood Fury")),
+                Spell.BuffSelf("Berserking", ret => SpellManager.HasSpell("Berserking")),
+                Spell.BuffSelf("Lifeblood", ret => SpellManager.HasSpell("Lifeblood")),
+                // Party/self attack power buff (avoid overwriting other class buffs)
+                Spell.BuffSelf("Battle Shout", ret => !StyxWoW.Me.HasAnyAura("Horn of Winter", "Roar of Courage", "Strength of Earth Totem", "Battle Shout")),
                 // Heal
                 Spell.Cast("Victory Rush"),
                 //rend
@@ -68,6 +75,11 @@ namespace Singular.ClassSpecific.Warrior
                 Helpers.Common.CreateAutoAttack(false),
                 // charge
                 Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance > 10 && StyxWoW.Me.CurrentTarget.Distance < 25),
+                // Offensive racials / buffs on pull
+                Spell.BuffSelf("Blood Fury", ret => SpellManager.HasSpell("Blood Fury")),
+                Spell.BuffSelf("Berserking", ret => SpellManager.HasSpell("Berserking")),
+                Spell.BuffSelf("Lifeblood", ret => SpellManager.HasSpell("Lifeblood")),
+                Spell.BuffSelf("Battle Shout", ret => !StyxWoW.Me.HasAnyAura("Horn of Winter", "Roar of Courage", "Strength of Earth Totem", "Battle Shout")),
                 Spell.Cast("Throw", ret => StyxWoW.Me.CurrentTarget.IsFlying && Item.RangedIsType(WoWItemWeaponClass.Thrown)), Spell.Cast(
                     "Shoot",
                     ret =>
