@@ -34,7 +34,7 @@ namespace Singular.ClassSpecific.Rogue
                 Spell.BuffSelf("Berserking", ret => SpellManager.HasSpell("Berserking")),
                 Spell.BuffSelf("Lifeblood", ret => SpellManager.HasSpell("Lifeblood")),
 
-                Spell.Cast("Eviscerate", ret => StyxWoW.Me.ComboPoints == 5 || StyxWoW.Me.CurrentTarget.HealthPercent <= 40 && StyxWoW.Me.ComboPoints >= 2),
+                Spell.Cast("Eviscerate", ret => StyxWoW.Me.CurrentTarget != null && (StyxWoW.Me.ComboPoints == 5 || StyxWoW.Me.CurrentTarget.HealthPercent <= 40 && StyxWoW.Me.ComboPoints >= 2)),
                 Spell.Cast("Sinister Strike"),
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
