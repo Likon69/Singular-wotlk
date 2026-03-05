@@ -77,18 +77,13 @@ namespace Singular.Helpers
             return new Decorator(
                 ret =>
                 !SingularSettings.Instance.DisableAllMovement && toUnit != null && toUnit(ret) != null && 
-                !toUnit(ret).IsMe && 
+                !StyxWoW.Me.IsMoving && !toUnit(ret).IsMe && 
                 !StyxWoW.Me.IsSafelyFacing(toUnit(ret), 70f),
-                new Sequence(
-                    // Stop movement first if moving - this ensures Face() works properly
-                    new DecoratorContinue(
-                        ret => StyxWoW.Me.IsMoving,
-                        new Action(ret => Navigator.PlayerMover.MoveStop())),
-                    new Action(ret =>
+                new Action(ret =>
                                {
                                    StyxWoW.Me.CurrentTarget.Face();
                                    return RunStatus.Failure;
-                               })));
+                               }));
         }
 
         /// <summary>
@@ -134,7 +129,9 @@ namespace Singular.Helpers
         /// <returns>.</returns>
         public static Composite CreateMoveToMeleeBehavior(bool stopInRange)
         {
-            return CreateMoveToMeleeBehavior(ret => StyxWoW.Me.CurrentTarget.Location, stopInRange);
+            return new Decorator(
+                ret => StyxWoW.Me.CurrentTarget != null,
+                CreateMoveToMeleeBehavior(ret => StyxWoW.Me.CurrentTarget.Location, stopInRange));
         }
 
         public static Composite CreateMoveToMeleeBehavior(LocationRetriever location, bool stopInRange)
@@ -142,7 +139,7 @@ namespace Singular.Helpers
             return 
                 new Decorator(
                     ret => !StyxWoW.Me.IsCasting,
-                    CreateMoveToLocationBehavior(location, stopInRange, ret => StyxWoW.Me.CurrentTarget.IsPlayer ? 2f : Spell.MeleeRange));
+                    CreateMoveToLocationBehavior(location, stopInRange, ret => StyxWoW.Me.CurrentTarget?.IsPlayer == true ? 2f : Spell.MeleeRange));
         }
 
         #region Move Behind
