@@ -129,8 +129,8 @@ namespace Singular.Managers
             int treeOne = 0, treeTwo = 0, treeThree = 0;
             //bool isExtraSpec = false;
 
-            // Keep the frame stuck so we can do a bunch of injecting at once.
-            using (new FrameLock())
+            // CopilotBuddy: FrameLock removed — it calls BeginExecute() which freezes
+            // WoW's render thread via EndScene hook. Individual Lua calls are fast enough.
             {
                 Talents.Clear();
                 for (int tab = 1; tab <= 3; tab++)

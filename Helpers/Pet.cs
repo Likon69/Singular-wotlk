@@ -14,9 +14,12 @@ namespace Singular.Helpers
         public static Composite CreateSummonPet(string petName)
         {
             return new Decorator(
-                ret => !SingularSettings.Instance.DisablePetUsage && !StyxWoW.Me.GotAlivePet && PetManager.PetTimer.IsFinished,
+                ret => !SingularSettings.Instance.DisablePetUsage 
+                    && !StyxWoW.Me.GotAlivePet 
+                    && PetManager.PetTimer.IsFinished
+                    && SpellManager.HasSpell("Summon " + petName),
                 new Sequence(
-                    new Action(ret => PetManager.CallPet(petName)),
+                    new Action(ret => PetManager.CallPet(petName) ? RunStatus.Success : RunStatus.Failure),
                     Helpers.Common.CreateWaitForLagDuration(),
                     new Wait(
                         5,

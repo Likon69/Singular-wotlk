@@ -311,8 +311,11 @@ namespace Singular
 
         #region Nested type: LockSelector
         /// <summary>
-        /// This behavior wraps the child behaviors in a 'FrameLock' which can provide a big performance improvement 
-        /// if the child behaviors makes multiple api calls that internally run off a frame in WoW in one CC pulse.
+        /// In original HB (injected), this wrapped child behaviors in a FrameLock
+        /// for performance.  CopilotBuddy is external — FrameLock here calls
+        /// BeginExecute() which freezes WoW's render thread via EndScene hook,
+        /// causing massive FPS drops (25→10).  TreeRoot.Tick already handles
+        /// frame locking at the tick level, so this wrapper just delegates.
         /// </summary>
         private class LockSelector : PrioritySelector
         {
@@ -322,10 +325,7 @@ namespace Singular
             }
             public override RunStatus Tick(object context)
             {
-                using (new FrameLock())
-                {
-                    return base.Tick(context);
-                }
+                return base.Tick(context);
             }
         }
         #endregion

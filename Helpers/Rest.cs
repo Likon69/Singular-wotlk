@@ -106,7 +106,9 @@ namespace Singular.Helpers
                             ret =>
                             ((StyxWoW.Me.PowerType == WoWPowerType.Mana && StyxWoW.Me.ManaPercent <= SingularSettings.Instance.MinMana) ||
                             StyxWoW.Me.HealthPercent <= SingularSettings.Instance.MinHealth) && !StyxWoW.Me.CurrentMap.IsBattleground,
-                            new Action(ret => Logger.Write("We have no food/drink. Waiting to recover our health/mana back")))
+                            new Sequence(
+                                new Action(ret => Logger.Write("We have no food/drink. Waiting to recover our health/mana back")),
+                                new WaitContinue(3, ret => StyxWoW.Me.Combat || (StyxWoW.Me.HealthPercent >= 85 && StyxWoW.Me.ManaPercent >= 85), new ActionAlwaysSucceed())))
                         ));
         }
 
