@@ -29,7 +29,7 @@ namespace Singular.Managers
         private static readonly WaitTimer CallPetTimer = WaitTimer.OneSecond;
 
         private static ulong _petGuid;
-        private static readonly List<WoWPetSpell> PetSpells = new List<WoWPetSpell>();
+        internal static readonly List<WoWPetSpell> PetSpells = new List<WoWPetSpell>();
 
         static PetManager()
         {

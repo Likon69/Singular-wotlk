@@ -61,7 +61,7 @@ namespace Singular.ClassSpecific.Hunter
                     new PrioritySelector(
                         Spell.BuffSelf("Rapid Fire",
                             ret => (StyxWoW.Me.HasAura("Call of the Wild") ||
-                                   !StyxWoW.Me.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
+                                   !PetManager.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
                                    !StyxWoW.Me.HasAnyAura("Bloodlust", "Heroism", "The Beast Within" /* WotLK QC: Removed Time Warp (Cata Mage) */)))),
 
                 // Rotation
@@ -124,7 +124,7 @@ namespace Singular.ClassSpecific.Hunter
                 // Cooldowns
                 Spell.BuffSelf("Rapid Fire",
                     ret => (StyxWoW.Me.HasAura("Call of the Wild") ||
-                           !StyxWoW.Me.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
+                           !PetManager.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
                            !StyxWoW.Me.HasAnyAura("Bloodlust", "Heroism", "The Beast Within" /* WotLK QC: Removed Time Warp (Cata Mage) */)),
 
                 // Rotation (WotLK priority: Kill Shot ? Explosive Shot ? Explosive Trap ? Kill Command ? Serpent Sting ? Black Arrow ? Aimed Shot ? Arcane Shot ? Steady Shot)
@@ -190,7 +190,7 @@ namespace Singular.ClassSpecific.Hunter
                 // Cooldowns
                 Spell.BuffSelf("Rapid Fire",
                     ret => (StyxWoW.Me.HasAura("Call of the Wild") ||
-                           !StyxWoW.Me.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
+                           !PetManager.PetSpells.Any(s => s.Spell != null && s.Spell.Name == "Call of the Wild" && s.Spell.CooldownTimeLeft.TotalSeconds < 60)) &&
                            !StyxWoW.Me.HasAnyAura("Bloodlust", "Heroism", "The Beast Within" /* WotLK QC: Removed Time Warp (Cata Mage) */)),
 
                 new Decorator(
