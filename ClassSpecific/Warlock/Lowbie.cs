@@ -48,7 +48,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Buff("Immolate"),
                 Spell.Buff("Corruption"),
                 Spell.Cast("Shadow Bolt"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 25f)
                 );
         }
     }
