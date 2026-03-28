@@ -147,7 +147,8 @@ namespace Singular.ClassSpecific.Hunter
         public static Composite CreateHunterCallPetBehavior(bool reviveInCombat)
         {
             return new Decorator(
-                ret =>  !SingularSettings.Instance.DisablePetUsage && !StyxWoW.Me.GotAlivePet && PetManager.PetTimer.IsFinished,
+                ret =>  !SingularSettings.Instance.DisablePetUsage && !StyxWoW.Me.GotAlivePet && PetManager.PetTimer.IsFinished
+                        && SpellManager.HasSpell("Call Pet"),
                 new PrioritySelector(
                     Spell.WaitForCast(),
                     new Decorator(
@@ -156,7 +157,12 @@ namespace Singular.ClassSpecific.Hunter
                             Movement.CreateEnsureMovementStoppedBehavior(),
                             Spell.BuffSelf("Revive Pet"))),
                     new Sequence(
-                        new Action(ret => PetManager.CallPet(SingularSettings.Instance.Hunter.PetSlot)),
+                        new Action(ret =>
+                        {
+                            if (!PetManager.CallPet(SingularSettings.Instance.Hunter.PetSlot))
+                                return RunStatus.Failure;
+                            return RunStatus.Success;
+                        }),
                         Helpers.Common.CreateWaitForLagDuration(),
                         new WaitContinue(2, ret => StyxWoW.Me.GotAlivePet || StyxWoW.Me.Combat, new ActionAlwaysSucceed()),
                         new Decorator(
