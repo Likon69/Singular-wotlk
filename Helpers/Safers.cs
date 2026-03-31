@@ -93,7 +93,9 @@ namespace Singular.Helpers
                                         2,
                                         ret => StyxWoW.Me.CurrentTarget != null &&
                                                 StyxWoW.Me.CurrentTarget == (WoWUnit)ret,
-                                        new ActionAlwaysSucceed())))),
+                                        new ActionAlwaysSucceed()),
+                                    // Singular 6.x.x fix: fall through to spell priority after switching
+                                    new ActionAlwaysFail()))),
                         new Decorator(
                             ret => StyxWoW.Me.CurrentTarget == null || StyxWoW.Me.CurrentTarget.Dead,
                             new PrioritySelector(
@@ -155,7 +157,10 @@ namespace Singular.Helpers
                                             ret => StyxWoW.Me.CurrentTarget != null &&
                                                    StyxWoW.Me.CurrentTarget == (WoWUnit)ret,
                                             new ActionAlwaysSucceed()))),
-                                new ActionAlwaysSucceed()))));
+                                // Singular 6.x.x fix: ActionAlwaysFail instead of ActionAlwaysSucceed
+                                // so that when no valid target is found, the behavior tree falls through
+                                // to LootBehavior instead of blocking it with a Success return.
+                                new ActionAlwaysFail()))));
         }
     }
 }

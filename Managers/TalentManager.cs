@@ -81,6 +81,10 @@ namespace Singular.Managers
             Lua.Events.AttachEvent("CHARACTER_POINTS_CHANGED", UpdateTalentManager);
             Lua.Events.AttachEvent("GLYPH_UPDATED", UpdateTalentManager);
             Lua.Events.AttachEvent("ACTIVE_TALENT_GROUP_CHANGED", UpdateTalentManager);
+            // From Singular 5.4.8 Managers/TalentManager.cs line 35:
+            // WotLK: fires when player buys a spell from a class trainer.
+            // Behaviors must be rebuilt so newly purchased spells enter rotation immediately.
+            Lua.Events.AttachEvent("LEARNED_SPELL_IN_TAB", UpdateTalentManager);
         }
 
         public static TalentSpec CurrentSpec { get; private set; }
@@ -109,6 +113,16 @@ namespace Singular.Managers
             TalentSpec oldSpec = CurrentSpec;
 
             Update();
+
+            // Singular 5.4.8 pattern: PLAYER_LEVEL_UP always triggers a rebuild.
+            // In WotLK, spells are bought from a trainer — LEARNED_SPELL_IN_TAB is
+            // the equivalent trigger (fires after each trainer purchase).
+            if (args.EventName == "LEARNED_SPELL_IN_TAB")
+            {
+                Logger.Write("Spell purchased from trainer — rebuilding behaviors.");
+                SingularRoutine.Instance.CreateBehaviors();
+                return;
+            }
 
             if (CurrentSpec != oldSpec)
             {
