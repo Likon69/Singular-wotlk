@@ -253,22 +253,30 @@ namespace Singular.Helpers
                             }
                             else
                             {
-                                WoWSpell spell;
-                                if (SpellManager.Spells.TryGetValue(name, out spell))
+                                // LOS check: don't attempt cast if target is behind terrain/walls.
+                                // Without this, ranged spells spam CastSpell which WoW silently rejects,
+                                // preventing CreateMoveToLosBehavior from ever running.
+                                if (!target.InLineOfSpellSight)
+                                    inRange = false;
+                                else
                                 {
-                                    var rangeId = spell.SpellRangeId;
-                                    var minRange = spell.MinRange;
-                                    var maxRange = spell.MaxRange;
-                                    var targetDistance = target.Distance;
-                                    // RangeId 1 is "Self Only". This should make life easier for people to use self-buffs, or stuff like Starfall where you cast it as a pseudo-buff.
-                                    if (rangeId == 1)
-                                        inRange = true;
-                                    // RangeId 2 is melee range. Huzzah :)
-                                    else if (rangeId == 2)
-                                        inRange = targetDistance < MeleeRange;
-                                    else
-                                        inRange = targetDistance < maxRange &&
-                                                  targetDistance > (minRange == 0 ? minRange : minRange + 3);
+                                    WoWSpell spell;
+                                    if (SpellManager.Spells.TryGetValue(name, out spell))
+                                    {
+                                        var rangeId = spell.SpellRangeId;
+                                        var minRange = spell.MinRange;
+                                        var maxRange = spell.MaxRange;
+                                        var targetDistance = target.Distance;
+                                        // RangeId 1 is "Self Only". This should make life easier for people to use self-buffs, or stuff like Starfall where you cast it as a pseudo-buff.
+                                        if (rangeId == 1)
+                                            inRange = true;
+                                        // RangeId 2 is melee range. Huzzah :)
+                                        else if (rangeId == 2)
+                                            inRange = targetDistance < MeleeRange;
+                                        else
+                                            inRange = targetDistance < maxRange &&
+                                                      targetDistance > (minRange == 0 ? minRange : minRange + 3);
+                                    }
                                 }
                             }
                         }
