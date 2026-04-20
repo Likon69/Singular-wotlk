@@ -27,8 +27,8 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Sprint", ret => StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Sprint", ret => SingularSettings.Instance.Rogue.UseStealthOnPull && StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Garrote", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.Cast("Cheap Shot", ret => !SpellManager.HasSpell("Garrote") || !StyxWoW.Me.CurrentTarget.MeIsBehind),
@@ -132,8 +132,8 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Sprint", ret => StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Sprint", ret => SingularSettings.Instance.Rogue.UseStealthOnPull && StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Garrote",
                     ret => StyxWoW.Me.CurrentTarget.MeIsBehind && StyxWoW.Me.CurrentTarget.PowerType == WoWPowerType.Mana),
@@ -217,8 +217,8 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Sprint", ret => StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Sprint", ret => SingularSettings.Instance.Rogue.UseStealthOnPull && StyxWoW.Me.IsMoving && StyxWoW.Me.HasAura("Stealth")),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Garrote", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.Cast("Cheap Shot", ret => !SpellManager.HasSpell("Garrote") || !StyxWoW.Me.CurrentTarget.MeIsBehind),

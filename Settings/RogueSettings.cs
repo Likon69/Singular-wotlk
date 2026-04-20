@@ -63,5 +63,12 @@ namespace Singular.Settings
         [DisplayName("Use Expose Armor")]
         [Description("Use Expose Armor")]
         public bool UseExposeArmor { get; set; }
+
+        [Setting]
+        [DefaultValue(true)]
+        [Category("Common")]
+        [DisplayName("Use Stealth on Pull")]
+        [Description("Use Stealth before pulling. Disable for low-level rogues or if stealth slows down grinding.")]
+        public bool UseStealthOnPull { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Singular.Dynamics;
 using Singular.Helpers;
 using Singular.Managers;
+using Singular.Settings;
 using Styx;
 using Styx.Combat.CombatRoutine;
 using Styx.Logic.Combat;
@@ -49,7 +50,7 @@ namespace Singular.ClassSpecific.Rogue
             return new PrioritySelector(
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 Helpers.Common.CreateAutoAttack(true),
                 Movement.CreateMoveToMeleeBehavior(true)
                 );

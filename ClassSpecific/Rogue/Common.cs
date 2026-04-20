@@ -4,6 +4,7 @@ using CommonBehaviors.Actions;
 using Singular.Dynamics;
 using Singular.Helpers;
 using Singular.Managers;
+using Singular.Settings;
 using Styx;
 using Styx.Combat.CombatRoutine;
 using Styx.Logic;
@@ -41,7 +42,7 @@ namespace Singular.ClassSpecific.Rogue
         public static Composite CreateRogueRest()
         {
             return new PrioritySelector(
-                Spell.BuffSelf("Stealth", ret => StyxWoW.Me.HasAura("Food")),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull && StyxWoW.Me.HasAura("Food")),
                 new Decorator(
                     ret => StyxWoW.Me.HasAura("Vanish") && StyxWoW.Me.CurrentMap.IsContinent,
                     new ActionAlwaysSucceed()),

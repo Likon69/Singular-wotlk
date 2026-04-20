@@ -27,7 +27,7 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Premeditation"),
                 Spell.Cast("Shadowstep"),
@@ -126,7 +126,7 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Premeditation"),
                 Spell.Cast("Shadowstep"),
@@ -212,7 +212,7 @@ namespace Singular.ClassSpecific.Rogue
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
-                Spell.BuffSelf("Stealth"),
+                Spell.BuffSelf("Stealth", ret => SingularSettings.Instance.Rogue.UseStealthOnPull),
                 // Garrote if we can, SS is kinda meh as an opener.
                 Spell.Cast("Premeditation", ret => StyxWoW.Me.ComboPoints <= 3),
                 Spell.Cast("Shadowstep"),
