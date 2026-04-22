@@ -27,7 +27,7 @@ namespace Singular.ClassSpecific.Shaman
         {
             return new PrioritySelector(
                 new Decorator(
-                    ret => !StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Name.StartsWith("Flametongue") && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.HasSpell("Flametongue Weapon") && // WotLK: check by name prefix to match all ranks
+                    ret => StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Id != 5 && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.HasSpell("Flametongue Weapon") &&
                             SpellManager.CanCast("Flametongue Weapon", null, false, false),
                     new Sequence(
                         new Action(ret => Lua.DoString("CancelItemTempEnchantment(1)")),

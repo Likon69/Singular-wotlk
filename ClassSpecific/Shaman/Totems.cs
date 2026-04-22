@@ -25,27 +25,27 @@ namespace Singular.ClassSpecific.Shaman
                 new Decorator(
                     ret => !SpellManager.HasSpell("Call of the Elements"),
                     new PrioritySelector(
+                        // Earth totem: match by slot type (reliable), check Active state via GetTotemInfo Lua
                         new PrioritySelector(
-                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == GetEarthTotem()),
+                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Earth),
                             new Decorator(
-                                ret => GetEarthTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo) ret).Unit == null ||
-                                       ((WoWTotemInfo) ret).Unit.Distance > GetTotemRange(GetEarthTotem())),
+                                ret => GetEarthTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo) ret).Active),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetEarthTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetEarthTotem().GetTotemSpellId()))))),
+                        // Air totem: match by slot type
                         new PrioritySelector(
-                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == GetAirTotem()),
+                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Air),
                             new Decorator(
-                                ret => GetAirTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo) ret).Unit == null ||
-                                       ((WoWTotemInfo)ret).Unit.Distance > GetTotemRange(GetAirTotem())),
+                                ret => GetAirTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo)ret).Active),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetAirTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetAirTotem().GetTotemSpellId()))))),
+                        // Water totem: match by slot type
                         new PrioritySelector(
-                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == GetWaterTotem()),
+                            ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Water),
                             new Decorator(
-                                ret => GetWaterTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo)ret).Unit == null ||
-                                       ((WoWTotemInfo) ret).Unit.Distance > GetTotemRange(GetWaterTotem())),
+                                ret => GetWaterTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo)ret).Active),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetWaterTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetWaterTotem().GetTotemSpellId())))))

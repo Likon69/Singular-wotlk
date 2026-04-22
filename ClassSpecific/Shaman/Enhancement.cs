@@ -32,14 +32,14 @@ namespace Singular.ClassSpecific.Shaman
             return new PrioritySelector(
 
                 new Decorator(
-                    ret => !StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Name.StartsWith("Windfury") && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.HasSpell("Windfury Weapon") && // WotLK: check by name prefix to match all ranks
+                    ret => StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Id != 283 && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.HasSpell("Windfury Weapon") &&
                             SpellManager.CanCast("Windfury Weapon", null, false, false),
                     new Sequence(
                         new Action(ret => Lua.DoString("CancelItemTempEnchantment(1) CancelItemTempEnchantment(2)")),
                         new Action(ret => Logger.Write("Imbuing main hand weapon with Windfury")),
                         new Action(ret => SpellManager.Cast("Windfury Weapon", null)))),
                 new Decorator(
-                    ret => !StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Name.StartsWith("Flametongue") && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && !SpellManager.HasSpell("Windfury Weapon") && // WotLK: check by name prefix to match all ranks
+                    ret => StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment.Id != 5 && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && !SpellManager.HasSpell("Windfury Weapon") &&
                             SpellManager.CanCast("Flametongue Weapon", null, false, false),
                     new Sequence(
                         new Action(ret => Lua.DoString("CancelItemTempEnchantment(1) CancelItemTempEnchantment(2)")),
@@ -48,8 +48,8 @@ namespace Singular.ClassSpecific.Shaman
                 new Decorator(
                     ret => StyxWoW.Me.Inventory.Equipped.OffHand != null && 
                            StyxWoW.Me.Inventory.Equipped.OffHand.ItemInfo.ItemClass == WoWItemClass.Weapon &&
-                           !StyxWoW.Me.Inventory.Equipped.OffHand.TemporaryEnchantment.Name.StartsWith("Flametongue") && // WotLK: check by name prefix to match all ranks
-                           StyxWoW.Me.Inventory.Equipped.MainHand != null && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.CanCast("Flametongue Weapon", null, false, false),
+                           StyxWoW.Me.Inventory.Equipped.OffHand.TemporaryEnchantment.Id != 5 &&
+                           StyxWoW.Me.Inventory.Equipped.MainHand != null && StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment != null && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.CanCast("Flametongue Weapon", null, false, false),
                     new Sequence(
                         new Action(ret => Lua.DoString("CancelItemTempEnchantment(2)")),
                         new Action(ret => Logger.Write("Imbuing off hand weapon with Flametongue")),
