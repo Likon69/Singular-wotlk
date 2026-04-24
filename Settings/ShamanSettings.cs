@@ -30,6 +30,11 @@ namespace Singular.Settings
         [Category("Totems")]
         [Description("The totem to use for this slot. Select 'None' for automatic usage.")]
         public WoWTotem AirTotem { get; set; }
+        [Setting]
+        [DefaultValue(WoWTotem.None)]
+        [Category("Totems")]
+        [Description("The fire totem to use for this slot. Select 'None' for automatic usage.")]
+        public WoWTotem FireTotem { get; set; }
         #endregion
 
         #region Category: Enhancement

@@ -121,7 +121,13 @@ namespace Singular.ClassSpecific.Shaman
                         },
                     new Sequence(
                         new Action(ret => SetupTotemBar()),
-                        Spell.BuffSelf("Call of the Elements")))
+                        new Decorator(
+                            ret => (System.DateTime.UtcNow - _lastCallOfElementsAttempt) > CallElementsCooldown,
+                            new Sequence(
+                                new Action(ret => { _lastCallOfElementsAttempt = System.DateTime.UtcNow; return RunStatus.Success; }),
+                                Spell.BuffSelf("Call of the Elements")
+                            )
+                        )))
                             
                 );
         }
@@ -132,11 +138,57 @@ namespace Singular.ClassSpecific.Shaman
             WoWTotem earth = SingularSettings.Instance.Shaman.EarthTotem;
             WoWTotem air = SingularSettings.Instance.Shaman.AirTotem;
             WoWTotem water = SingularSettings.Instance.Shaman.WaterTotem;
+            WoWTotem fire = SingularSettings.Instance.Shaman.FireTotem;
 
             SetTotemBarSlot(MultiCastSlot.ElementsEarth, earth != WoWTotem.None ? earth : GetEarthTotem());
             SetTotemBarSlot(MultiCastSlot.ElementsAir, air != WoWTotem.None ? air : GetAirTotem());
             SetTotemBarSlot(MultiCastSlot.ElementsWater, water != WoWTotem.None ? water : GetWaterTotem());
-            SetTotemBarSlot(MultiCastSlot.ElementsFire, WoWTotem.None);
+            SetTotemBarSlot(MultiCastSlot.ElementsFire, fire != WoWTotem.None ? fire : GetFireTotem());
+        }
+
+        /// <summary>
+        /// Returns the best fire totem to use for the current situation.
+        /// Logic mirrors GetEarth/GetAir/GetWater style: prefer raid/group buffs when appropriate,
+        /// fall back to single-target damage totems when solo. Uses TotemIsKnown() so it is safe.
+        /// </summary>
+        public static WoWTotem GetFireTotem()
+        {
+            LocalPlayer me = StyxWoW.Me;
+            bool isEnhance = TalentManager.CurrentSpec == TalentSpec.EnhancementShaman;
+            bool isElemental = TalentManager.CurrentSpec == TalentSpec.ElementalShaman;
+
+            // Restoration shamans seldom want a fire totem.
+            if (TalentManager.CurrentSpec == TalentSpec.RestorationShaman)
+            {
+                return WoWTotem.None;
+            }
+
+            // Solo play: prefer single-target damage totems (Searing), then Magma, then Flametongue for minor utility
+            if (!me.IsInParty && !me.IsInRaid)
+            {
+                if (TotemIsKnown(WoWTotem.Searing))
+                    return WoWTotem.Searing;
+                if (TotemIsKnown(WoWTotem.Magma))
+                    return WoWTotem.Magma;
+                if (TotemIsKnown(WoWTotem.Flametongue))
+                    return WoWTotem.Flametongue;
+                if (TotemIsKnown(WoWTotem.TotemOfWrath))
+                    return WoWTotem.TotemOfWrath;
+
+                return WoWTotem.None;
+            }
+
+            // In group/raid: prefer Totem of Wrath (party DPS buff), then Magma for AoE, then Searing for single-target
+            if (TotemIsKnown(WoWTotem.TotemOfWrath))
+                return WoWTotem.TotemOfWrath;
+            if (TotemIsKnown(WoWTotem.Magma))
+                return WoWTotem.Magma;
+            if (TotemIsKnown(WoWTotem.Searing))
+                return WoWTotem.Searing;
+            if (TotemIsKnown(WoWTotem.Flametongue))
+                return WoWTotem.Flametongue;
+
+            return WoWTotem.None;
         }
 
         /// <summary>
@@ -224,6 +276,8 @@ namespace Singular.ClassSpecific.Shaman
             Lua.DoString("SetMultiCastSpell({0}, {1})", (int)slot, totem.GetTotemSpellId());
         }
 
+        private static System.DateTime _lastCallOfElementsAttempt = System.DateTime.MinValue;
+        private static readonly System.TimeSpan CallElementsCooldown = System.TimeSpan.FromSeconds(6);
         private static readonly Dictionary<MultiCastSlot, WoWTotem> LastSetTotems = new Dictionary<MultiCastSlot, WoWTotem>();
 
         private static WoWTotem GetEarthTotem()
