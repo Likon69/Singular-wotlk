@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using Singular.Helpers;
@@ -29,7 +29,9 @@ namespace Singular.ClassSpecific.Shaman
                         new PrioritySelector(
                             ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Earth),
                             new Decorator(
-                                ret => GetEarthTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo) ret).Active),
+                                // WotLK fix: .Active stays true even after a totem expires naturally.
+                                // Correct check is whether the totem unit object still exists in the world.
+                                ret => GetEarthTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo)ret).Unit == null),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetEarthTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetEarthTotem().GetTotemSpellId()))))),
@@ -37,7 +39,8 @@ namespace Singular.ClassSpecific.Shaman
                         new PrioritySelector(
                             ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Air),
                             new Decorator(
-                                ret => GetAirTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo)ret).Active),
+                                // WotLK fix: same as Earth — use .Unit == null instead of !.Active
+                                ret => GetAirTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo)ret).Unit == null),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetAirTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetAirTotem().GetTotemSpellId()))))),
@@ -45,7 +48,8 @@ namespace Singular.ClassSpecific.Shaman
                         new PrioritySelector(
                             ctx => StyxWoW.Me.Totems.FirstOrDefault(t => t.Type == WoWTotemType.Water),
                             new Decorator(
-                                ret => GetWaterTotem() != WoWTotem.None && (ret == null || !((WoWTotemInfo)ret).Active),
+                                // WotLK fix: same as Earth/Air — use .Unit == null instead of !.Active
+                                ret => GetWaterTotem() != WoWTotem.None && (ret == null || ((WoWTotemInfo)ret).Unit == null),
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetWaterTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetWaterTotem().GetTotemSpellId())))))

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Singular.Dynamics;
@@ -46,10 +46,13 @@ namespace Singular.ClassSpecific.Shaman
                         new Action(ret => Logger.Write("Imbuing main hand weapon with Flametongue")),
                         new Action(ret => SpellManager.Cast("Flametongue Weapon", null)))),
                 new Decorator(
-                    ret => StyxWoW.Me.Inventory.Equipped.OffHand != null && 
+                    ret => StyxWoW.Me.Inventory.Equipped.OffHand != null &&
                            StyxWoW.Me.Inventory.Equipped.OffHand.ItemInfo.ItemClass == WoWItemClass.Weapon &&
-                           !StyxWoW.Me.Inventory.Equipped.OffHand.TemporaryEnchantment.IsValid &&
-                           StyxWoW.Me.Inventory.Equipped.MainHand != null && StyxWoW.Me.Inventory.Equipped.MainHand.TemporaryEnchantment != null && StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole && SpellManager.CanCast("Flametongue Weapon", null, false, false),
+                           // WotLK fix: TemporaryEnchantment can be null when OH has no enchant — guard before .IsValid
+                           (StyxWoW.Me.Inventory.Equipped.OffHand.TemporaryEnchantment == null || !StyxWoW.Me.Inventory.Equipped.OffHand.TemporaryEnchantment.IsValid) &&
+                           StyxWoW.Me.Inventory.Equipped.MainHand != null &&
+                           StyxWoW.Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass != WoWItemWeaponClass.FishingPole &&
+                           SpellManager.CanCast("Flametongue Weapon", null, false, false),
                     new Sequence(
                         new Action(ret => Lua.DoString("CancelItemTempEnchantment(2)")),
                         new Action(ret => Logger.Write("Imbuing off hand weapon with Flametongue")),
@@ -161,18 +164,21 @@ namespace Singular.ClassSpecific.Shaman
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
 
                 Spell.BuffSelf("Lightning Shield"),
-                Spell.BuffSelf("Feral Spirit", ret => StyxWoW.Me.CurrentTarget.Elite || Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3),
+                // WotLK fix: CurrentTarget can be null mid-tick — guard with null check
+                Spell.BuffSelf("Feral Spirit", ret => StyxWoW.Me.CurrentTarget != null && (StyxWoW.Me.CurrentTarget.Elite || Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3)),
 
                 // Totem stuff
                 // Pop the ele on bosses
                 Spell.BuffSelf("Fire Elemental Totem",
-                    ret => (StyxWoW.Me.CurrentTarget.Elite || Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3) && 
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           (StyxWoW.Me.CurrentTarget.Elite || Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3) &&
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Magma Totem",
                     ret => Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10*10 && u.IsTargetingMeOrPet) >= 3 &&
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental || t.WoWTotem == WoWTotem.Magma)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
@@ -191,11 +197,15 @@ namespace Singular.ClassSpecific.Shaman
                 Spell.Cast("Stormstrike"),
                 // WotLK QC: Flame Shock is a valuable DoT on its own — removed Cata Fire Nova synergy gate.
                 // Apply to elites always, or multi-target packs.
+                // WotLK fix: guard CurrentTarget null before accessing .Elite (b__4_1 / b__4_2 NRE)
                 Spell.Buff("Flame Shock", true,
-                    ret => StyxWoW.Me.CurrentTarget.Elite ||
-                           Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10 * 10 && u.IsTargetingMeOrPet) >= 3),
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           (StyxWoW.Me.CurrentTarget.Elite ||
+                            Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10 * 10 && u.IsTargetingMeOrPet) >= 3)),
                 Spell.Cast("Earth Shock",
-                    ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6 || !StyxWoW.Me.CurrentTarget.Elite),
+                    // WotLK fix: guard CurrentTarget null before .GetAuraTimeLeft (b__4_7 NRE)
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           (StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6 || !StyxWoW.Me.CurrentTarget.Elite)),
                 Spell.Cast("Lava Lash",
                     ret => StyxWoW.Me.Inventory.Equipped.OffHand != null &&
                            StyxWoW.Me.Inventory.Equipped.OffHand.ItemInfo.ItemClass == WoWItemClass.Weapon),
