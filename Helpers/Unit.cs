@@ -87,6 +87,8 @@ namespace Singular.Helpers
         /// <value>The nearby unfriendly units.</value>
         public static IEnumerable<WoWUnit> UnfriendlyUnitsNearTarget(float distance)
         {
+            if (StyxWoW.Me.CurrentTarget == null)
+                return Enumerable.Empty<WoWUnit>();
             var dist = distance*distance;
             var curTarLocation = StyxWoW.Me.CurrentTarget.Location;
             return ObjectManager.GetObjectsOfType<WoWUnit>(false, false).Where(

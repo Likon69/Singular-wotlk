@@ -77,7 +77,7 @@ namespace Singular.ClassSpecific.Paladin
                         Spell.Cast("Hammer of the Righteous"),
                         Spell.Cast("Hammer of Justice", ctx => !StyxWoW.Me.IsInParty),
                         Spell.Cast("Consecration", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= SingularSettings.Instance.Paladin.ProtConsecrationCount 
-                            || StyxWoW.Me.CurrentTarget.IsBoss()),
+                            || StyxWoW.Me.CurrentTarget?.IsBoss() == true),
                         Spell.Cast("Holy Wrath"),
                         Spell.Cast("Avenger's Shield", ret => !SingularSettings.Instance.Paladin.AvengersPullOnly),
                         Spell.Cast("Judgement of Wisdom"),
