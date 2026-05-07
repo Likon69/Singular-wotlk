@@ -75,6 +75,27 @@ namespace Singular.ClassSpecific.Warrior
         }
 
         [Spec(TalentSpec.ProtectionWarrior)]
+        [Behavior(BehaviorType.PreCombatBuffs)]
+        [Class(WoWClass.Warrior)]
+        [Priority(500)]
+        [Context(WoWContext.Normal)]
+        public static Composite CreateProtectionNormalPreCombatBuffs()
+        {
+            return new PrioritySelector(
+                Spell.BuffSelf("Defensive Stance"),
+                Spell.BuffSelf(
+                    "Battle Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts &&
+                    !StyxWoW.Me.HasAnyAura("Horn of Winter", "Strength of Earth Totem", "Battle Shout")),
+                Spell.BuffSelf(
+                    "Commanding Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts == false &&
+                    !StyxWoW.Me.HasAura("Commanding Shout")));
+        }
+
+        [Spec(TalentSpec.ProtectionWarrior)]
         [Behavior(BehaviorType.CombatBuffs)]
         [Class(WoWClass.Warrior)]
         [Priority(500)]
@@ -202,28 +223,34 @@ namespace Singular.ClassSpecific.Warrior
                             ret =>
                             Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2))),
                 //Taunts
-                //If more than 3 taunt, if needs to taunt                
+                //If more than 3 enemies need taunting, use group taunt
                 Spell.Cast(
-                    "Challenging Shout", ret => TankManager.Instance.NeedToTaunt.First(),
+                    "Challenging Shout", ret => TankManager.Instance.NeedToTaunt.FirstOrDefault(),
                     ret =>
                     SingularSettings.Instance.EnableTaunting &&
                     TankManager.Instance.NeedToTaunt.Count(u => u.Distance <= 10) >= 3),
                 // If there's a unit that needs taunting, do it.
                 Spell.Cast(
-                    "Taunt", ret => TankManager.Instance.NeedToTaunt.First(),
+                    "Taunt", ret => TankManager.Instance.NeedToTaunt.FirstOrDefault(),
                     ret =>
                     SingularSettings.Instance.EnableTaunting &&
-                    TankManager.Instance.NeedToTaunt.FirstOrDefault() != null), //Single Target
-                Spell.Cast("Victory Rush"), Spell.Cast("Concussion Blow"), Spell.Cast("Shield Slam"),
-                Spell.Cast("Revenge"), Spell.Cast("Heroic Strike", ret => RagePercent >= 50),
+                    TankManager.Instance.NeedToTaunt.FirstOrDefault() != null),
+                // WotLK Prot priority: Shield Slam > Revenge > Concussion Blow > Shockwave > Victory Rush > Devastate > Sunder Armor
+                Spell.Cast("Shield Slam"),
+                Spell.Cast("Revenge"),
+                Spell.Cast("Concussion Blow"),
+                Spell.Cast("Shockwave"),
+                Spell.Cast("Victory Rush"),
+                Spell.Cast("Devastate"),
+                Spell.Buff("Sunder Armor"),
                 Spell.Buff("Rend"),
-                // Tclap may not be a giant threat increase, but In WotLK, TC does not refresh Rend (Blood and Thunder is Cata-only), but TC is still good for threat + slow.
-                // Oh, and the attack speed debuff is win as well.
+                // WotLK: TC does not refresh Rend (Blood and Thunder is Cata-only), but TC provides threat + attack speed debuff.
                 Spell.Cast(
                     "Thunder Clap",
                     ctx =>
                     StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.DistanceSqr < 7*7 &&
-                    StyxWoW.Me.CurrentTarget.Attackable), Spell.Cast("Shockwave"), Spell.Cast("Devastate"),
+                    StyxWoW.Me.CurrentTarget.Attackable),
+                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
@@ -283,6 +310,27 @@ namespace Singular.ClassSpecific.Warrior
                     !Unit.HasAura(StyxWoW.Me.CurrentTarget, "Charge Stun") &&
                     SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false), // Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true));
+        }
+
+        [Spec(TalentSpec.ProtectionWarrior)]
+        [Behavior(BehaviorType.PreCombatBuffs)]
+        [Class(WoWClass.Warrior)]
+        [Priority(500)]
+        [Context(WoWContext.Battlegrounds)]
+        public static Composite CreateProtectionBgPreCombatBuffs()
+        {
+            return new PrioritySelector(
+                Spell.BuffSelf("Defensive Stance"),
+                Spell.BuffSelf(
+                    "Battle Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts &&
+                    !StyxWoW.Me.HasAnyAura("Horn of Winter", "Strength of Earth Totem", "Battle Shout")),
+                Spell.BuffSelf(
+                    "Commanding Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts == false &&
+                    !StyxWoW.Me.HasAura("Commanding Shout")));
         }
 
         [Spec(TalentSpec.ProtectionWarrior)]
@@ -387,8 +435,12 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Cleave",
                     ret => Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2),
-                Spell.Cast("Concussion Blow"), Spell.Cast("Shield Slam"), Spell.Cast("Revenge"), Spell.Cast("Devastate"),
-                Spell.Cast("Heroic Strike", ret => RagePercent >= 50),
+                Spell.Cast("Shield Slam"),
+                Spell.Cast("Revenge"),
+                Spell.Cast("Concussion Blow"),
+                Spell.Cast("Devastate"),
+                Spell.Buff("Sunder Armor"),
+                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
@@ -448,6 +500,27 @@ namespace Singular.ClassSpecific.Warrior
                     !Unit.HasAura(StyxWoW.Me.CurrentTarget, "Charge Stun") &&
                     SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false), // Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true));
+        }
+
+        [Spec(TalentSpec.ProtectionWarrior)]
+        [Behavior(BehaviorType.PreCombatBuffs)]
+        [Class(WoWClass.Warrior)]
+        [Priority(500)]
+        [Context(WoWContext.Instances)]
+        public static Composite CreateProtectionInstancePreCombatBuffs()
+        {
+            return new PrioritySelector(
+                Spell.BuffSelf("Defensive Stance"),
+                Spell.BuffSelf(
+                    "Battle Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts &&
+                    !StyxWoW.Me.HasAnyAura("Horn of Winter", "Strength of Earth Totem", "Battle Shout")),
+                Spell.BuffSelf(
+                    "Commanding Shout",
+                    ret =>
+                    SingularSettings.Instance.Warrior.UseWarriorShouts == false &&
+                    !StyxWoW.Me.HasAura("Commanding Shout")));
         }
 
         [Spec(TalentSpec.ProtectionWarrior)]
@@ -550,28 +623,34 @@ namespace Singular.ClassSpecific.Warrior
                             ret =>
                             Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2))),
                 //Taunts
-                //If more than 3 taunt, if needs to taunt                
+                //If more than 3 enemies need taunting, use group taunt
                 Spell.Cast(
-                    "Challenging Shout", ret => TankManager.Instance.NeedToTaunt.First(),
+                    "Challenging Shout", ret => TankManager.Instance.NeedToTaunt.FirstOrDefault(),
                     ret =>
                     SingularSettings.Instance.EnableTaunting &&
                     TankManager.Instance.NeedToTaunt.Count(u => u.Distance <= 10) >= 3),
                 // If there's a unit that needs taunting, do it.
                 Spell.Cast(
-                    "Taunt", ret => TankManager.Instance.NeedToTaunt.First(),
+                    "Taunt", ret => TankManager.Instance.NeedToTaunt.FirstOrDefault(),
                     ret =>
                     SingularSettings.Instance.EnableTaunting &&
-                    TankManager.Instance.NeedToTaunt.FirstOrDefault() != null), //Single Target
-                Spell.Cast("Victory Rush"), Spell.Cast("Concussion Blow"), Spell.Cast("Shield Slam"),
-                Spell.Cast("Revenge"), Spell.Cast("Heroic Strike", ret => RagePercent >= 50),
+                    TankManager.Instance.NeedToTaunt.FirstOrDefault() != null),
+                // WotLK Prot priority: Shield Slam > Revenge > Concussion Blow > Shockwave > Victory Rush > Devastate > Sunder Armor
+                Spell.Cast("Shield Slam"),
+                Spell.Cast("Revenge"),
+                Spell.Cast("Concussion Blow"),
+                Spell.Cast("Shockwave"),
+                Spell.Cast("Victory Rush"),
+                Spell.Cast("Devastate"),
+                Spell.Buff("Sunder Armor"),
                 Spell.Buff("Rend"),
-                // Tclap may not be a giant threat increase, but In WotLK, TC does not refresh Rend (Blood and Thunder is Cata-only), but TC is still good for threat + slow.
-                // Oh, and the attack speed debuff is win as well.
+                // WotLK: TC does not refresh Rend (Blood and Thunder is Cata-only), but TC provides threat + attack speed debuff.
                 Spell.Cast(
                     "Thunder Clap",
                     ctx =>
                     StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.DistanceSqr < 7*7 &&
-                    StyxWoW.Me.CurrentTarget.Attackable), Spell.Cast("Shockwave"), Spell.Cast("Devastate"),
+                    StyxWoW.Me.CurrentTarget.Attackable),
+                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
