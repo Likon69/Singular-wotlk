@@ -201,25 +201,23 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Cleave"),
                         Spell.Cast("Bloodthirst"))),
 
-                //Rotation under 20%
-                Spell.Cast("Execute"),
-                //Rotation over 20%               
-
-                // WotLK: SMF (Single-Minded Fury) doesn't exist (Cata 4.0.1), using Titan's Grip rotation only
+                // Bloodsurge proc: instant Slam fires before primary fillers
+                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
+                // WotLK Fury ST priority: BT > WW > Sunder Armor (filler)
                 Spell.Cast("Bloodthirst"),
                 Spell.Cast("Whirlwind"),
-                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
-
+                // Filler: Sunder Armor if target lacks full debuff stacks
+                Spell.Cast("Sunder Armor", ret => !StyxWoW.Me.CurrentTarget.HasAura("Sunder Armor") ||
+                    (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
+                // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
-                    // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
+                    CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
-                    // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
+                    CanUseRageDump()),
+                // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)
+                Spell.Cast("Execute"),
 
                 //Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true)
@@ -404,25 +402,23 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Cleave"),
                         Spell.Cast("Bloodthirst"))),
 
-                //Rotation under 20%
-                Spell.Cast("Execute"),
-                //Rotation over 20%               
-
-                // WotLK: SMF (Single-Minded Fury) doesn't exist (Cata 4.0.1), using Titan's Grip rotation only
+                // Bloodsurge proc: instant Slam fires before primary fillers
+                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
+                // WotLK Fury ST priority: BT > WW > Sunder Armor (filler)
                 Spell.Cast("Bloodthirst"),
                 Spell.Cast("Whirlwind"),
-                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
-
+                // Filler: Sunder Armor if target lacks full debuff stacks
+                Spell.Cast("Sunder Armor", ret => !StyxWoW.Me.CurrentTarget.HasAura("Sunder Armor") ||
+                    (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
+                // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
-                    // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
+                    CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
-                    // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
+                    CanUseRageDump()),
+                // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)
+                Spell.Cast("Execute"),
 
                 //Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true)
@@ -606,25 +602,23 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Cleave"),
                         Spell.Cast("Bloodthirst"))),
 
-                //Rotation under 20%
-                Spell.Cast("Execute"),
-                //Rotation over 20%               
-
-                // WotLK: SMF (Single-Minded Fury) doesn't exist (Cata 4.0.1), using Titan's Grip rotation only
+                // Bloodsurge proc: instant Slam fires before primary fillers
+                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
+                // WotLK Fury ST priority: BT > WW > Sunder Armor (filler)
                 Spell.Cast("Bloodthirst"),
                 Spell.Cast("Whirlwind"),
-                Spell.Cast("Slam", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Bloodsurge")),
-
+                // Filler: Sunder Armor if target lacks full debuff stacks
+                Spell.Cast("Sunder Armor", ret => !StyxWoW.Me.CurrentTarget.HasAura("Sunder Armor") ||
+                    (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
+                // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
-                    // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
+                    CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
-                    // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
-                                Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
-                                    // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
-                                CanUseRageDump()),
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
+                    CanUseRageDump()),
+                // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)
+                Spell.Cast("Execute"),
 
                 //Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true)
@@ -648,8 +642,8 @@ namespace Singular.ClassSpecific.Warrior
 
         static bool CanUseRageDump()
         {
-            // Just check if we have 60 rage to use cleave.
-            return RagePercent > 60;
+            // Use Heroic Strike / Cleave at >= 40 rage to avoid overcapping (WotLK Fury: >40 rage per icy-veins)
+            return StyxWoW.Me.CurrentRage >= 40;
         }
 
         static bool HasSpellIntercept()
