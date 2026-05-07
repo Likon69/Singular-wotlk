@@ -106,7 +106,7 @@ namespace Singular.Helpers
                                     if (rafLeader != null && rafLeader.IsValid && !rafLeader.IsMe && rafLeader.Combat &&
                                         rafLeader.CurrentTarget != null && rafLeader.CurrentTarget.IsAlive && !Blacklist.Contains(rafLeader.CurrentTarget))
                                     {
-                                        return rafLeader;
+                                        return rafLeader.CurrentTarget;
                                     }
 
                                     // Check bot poi.
