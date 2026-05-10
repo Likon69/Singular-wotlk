@@ -125,7 +125,9 @@ namespace Singular.ClassSpecific.Rogue
 
                 // WotLK QC: Removed Backstab sub-35% logic (Cata "Murderous Intent" talent doesn't exist in WotLK)
                 // Assassination rogues always use Mutilate as their builder in WotLK
-                Spell.Cast("Mutilate", ret => !StyxWoW.Me.HasAura("Cold Blood")),
+                // Fallback to Sinister Strike if Mutilate is unavailable (low level / no daggers)
+                Spell.Cast("Mutilate", ret => SpellManager.HasSpell("Mutilate") && !StyxWoW.Me.HasAura("Cold Blood")),
+                Spell.Cast("Sinister Strike", ret => !StyxWoW.Me.HasAura("Cold Blood")),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
@@ -216,7 +218,9 @@ namespace Singular.ClassSpecific.Rogue
                 Spell.Cast("Envenom",
                     ret => StyxWoW.Me.CurrentTarget.HealthPercent < 35 && StyxWoW.Me.ComboPoints == 5),
                 // QC3: Removed Murderous Intent (Cata-only) Backstab sub-35% logic — WotLK Assassination always uses Mutilate
-                Spell.Cast("Mutilate", ret => !StyxWoW.Me.HasAura("Cold Blood")),
+                // Fallback to Sinister Strike if Mutilate unavailable (low level / no daggers)
+                Spell.Cast("Mutilate", ret => SpellManager.HasSpell("Mutilate") && !StyxWoW.Me.HasAura("Cold Blood")),
+                Spell.Cast("Sinister Strike", ret => !StyxWoW.Me.HasAura("Cold Blood")),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
@@ -319,7 +323,9 @@ namespace Singular.ClassSpecific.Rogue
                 Spell.Cast("Envenom",
                     ret => StyxWoW.Me.CurrentTarget.HealthPercent < 35 && StyxWoW.Me.ComboPoints == 5),
                 // WotLK QC: Removed Backstab sub-35% (Cata Murderous Intent). Assassination always uses Mutilate.
-                Spell.Cast("Mutilate", ret => !StyxWoW.Me.HasAura("Cold Blood")),
+                // Fallback to Sinister Strike if Mutilate unavailable (low level / no daggers)
+                Spell.Cast("Mutilate", ret => SpellManager.HasSpell("Mutilate") && !StyxWoW.Me.HasAura("Cold Blood")),
+                Spell.Cast("Sinister Strike", ret => !StyxWoW.Me.HasAura("Cold Blood")),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
