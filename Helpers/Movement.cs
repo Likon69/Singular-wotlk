@@ -81,8 +81,15 @@ namespace Singular.Helpers
                 !StyxWoW.Me.IsSafelyFacing(toUnit(ret), 70f),
                 new Action(ret =>
                                {
-                                   StyxWoW.Me.CurrentTarget.Face();
-                                   return RunStatus.Failure;
+                                   WoWUnit unit = toUnit(ret);
+                                   unit.Face();
+
+                                   // Prevent lower-priority cast actions from firing while still turning.
+                                   // This mirrors newer Singular behavior and avoids visible cast-spam on behind targets.
+                                   if (StyxWoW.Me.IsSafelyFacing(unit, 150f))
+                                       return RunStatus.Failure;
+
+                                   return RunStatus.Success;
                                }));
         }
 
