@@ -78,8 +78,8 @@ namespace Singular.Helpers
                     if (player == null || result.Contains(player))
                         continue;
 
-                    // LFD / raid role check
-                    if (m.IsTank)
+                    // Role API is reliable in raid; for party groups rely on aura/class fallback below.
+                    if (StyxWoW.Me.IsInRaid && m.IsTank)
                     {
                         result.Add(player);
                         continue;
@@ -115,15 +115,21 @@ namespace Singular.Helpers
                     if (player == null || result.Contains(player))
                         continue;
 
-                    // LFD / raid role check
-                    if (m.IsHealer)
+                    // Role API is reliable in raid; avoid role checks in party to prevent invalid unit-token lookups.
+                    if (StyxWoW.Me.IsInRaid && m.IsHealer)
                     {
                         result.Add(player);
                         continue;
                     }
 
-                    // No reliable way to detect other players' spec in WotLK
-                    // Healer detection for non-LFD groups relies on role assignments
+                    if (!StyxWoW.Me.IsInRaid &&
+                        (player.Class == WoWClass.Priest ||
+                         player.Class == WoWClass.Paladin ||
+                         player.Class == WoWClass.Shaman ||
+                         player.Class == WoWClass.Druid))
+                    {
+                        result.Add(player);
+                    }
                 }
 
                 return result;
