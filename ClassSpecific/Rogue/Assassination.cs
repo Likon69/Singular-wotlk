@@ -102,7 +102,7 @@ namespace Singular.ClassSpecific.Rogue
 
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4 && StyxWoW.Me.CurrentTarget.Elite),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 // WotLK QC: Hunger for Blood — 51-point Assassination talent, removed in Cata. Must maintain on self.
                 Spell.BuffSelf("Hunger for Blood",
                     ret => SpellManager.HasSpell("Hunger for Blood") &&
@@ -200,7 +200,7 @@ namespace Singular.ClassSpecific.Rogue
                            StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 // WotLK QC: Hunger for Blood — 51-point Assassination talent, removed in Cata. Must maintain on self.
                 Spell.BuffSelf("Hunger for Blood",
                     ret => SpellManager.HasSpell("Hunger for Blood") &&
@@ -307,7 +307,7 @@ namespace Singular.ClassSpecific.Rogue
 
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4),
                 Spell.BuffSelf("Slice and Dice", 
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 // WotLK QC: Hunger for Blood — 51-point Assassination talent, removed in Cata. Must maintain on self.
                 Spell.BuffSelf("Hunger for Blood",
                     ret => SpellManager.HasSpell("Hunger for Blood") &&

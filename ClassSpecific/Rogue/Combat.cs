@@ -106,7 +106,7 @@ namespace Singular.ClassSpecific.Rogue
                     ret => SingularSettings.Instance.Rogue.CombatUseRuptureFinisher && StyxWoW.Me.ComboPoints >= 4 &&
                            StyxWoW.Me.CurrentTarget.Elite && !StyxWoW.Me.HasAura("Blade Flurry") && StyxWoW.Me.CurrentTarget.HasBleedDebuff()),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Cast("Eviscerate",
                     ret => StyxWoW.Me.CurrentTarget.HealthPercent < 40 && StyxWoW.Me.ComboPoints >= 2),
                 Spell.Cast("Eviscerate",
@@ -190,7 +190,7 @@ namespace Singular.ClassSpecific.Rogue
                     ret => SingularSettings.Instance.Rogue.CombatUseRuptureFinisher && StyxWoW.Me.ComboPoints >= 4 &&
                            !StyxWoW.Me.HasAura("Blade Flurry") && StyxWoW.Me.CurrentTarget.HasBleedDebuff()),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Cast("Eviscerate",
                     ret => StyxWoW.Me.CurrentTarget.HealthPercent <= 30 && StyxWoW.Me.ComboPoints >= 3),
                 Spell.Cast("Kidney Shot",
@@ -288,7 +288,7 @@ namespace Singular.ClassSpecific.Rogue
                     ret => SingularSettings.Instance.Rogue.CombatUseRuptureFinisher && StyxWoW.Me.ComboPoints >= 4 && 
                            !StyxWoW.Me.HasAura("Blade Flurry") && StyxWoW.Me.CurrentTarget.HasBleedDebuff()),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Cast("Eviscerate",
                     ret => StyxWoW.Me.ComboPoints == 5),
                 Spell.Cast("Sinister Strike"),

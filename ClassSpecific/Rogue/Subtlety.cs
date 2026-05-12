@@ -99,7 +99,7 @@ namespace Singular.ClassSpecific.Rogue
                 Spell.BuffSelf("Shadow Dance", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3),
                 Spell.Cast("Cheap Shot", ret => StyxWoW.Me.HasAura("Shadow Dance")),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4 && StyxWoW.Me.CurrentTarget.Elite),
                 Spell.Cast("Eviscerate", ret => StyxWoW.Me.CurrentTarget.HealthPercent < 40 && StyxWoW.Me.ComboPoints >= 2),
                 Spell.Cast("Eviscerate", ret => StyxWoW.Me.ComboPoints == 5),
@@ -178,7 +178,7 @@ namespace Singular.ClassSpecific.Rogue
                            SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
                 Spell.BuffSelf("Shadow Dance", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4),
                 Spell.Cast("Eviscerate", ret => StyxWoW.Me.ComboPoints == 5),
                 // Vanish + Shadowstep + Premeditation + Ambush combo
@@ -276,7 +276,7 @@ namespace Singular.ClassSpecific.Rogue
                            SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
                 Spell.BuffSelf("Shadow Dance", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.BuffSelf("Slice and Dice",
-                    ret => StyxWoW.Me.RawComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
+                    ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
                 Spell.Buff("Rupture", true, ret => StyxWoW.Me.ComboPoints >= 4),
                 Spell.Cast("Eviscerate", ret => StyxWoW.Me.ComboPoints == 5),
                 // Vanish + Shadowstep + Premeditation + Ambush combo
