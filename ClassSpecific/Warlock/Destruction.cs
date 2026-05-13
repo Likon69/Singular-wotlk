@@ -48,7 +48,7 @@ namespace Singular.ClassSpecific.Warlock
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.Cast("Soul Fire"),
                 Spell.Buff("Immolate", true),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -92,7 +92,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Shadowburn", ret => StyxWoW.Me.CurrentTarget.HealthPercent <= 20),
                 Spell.Cast("Incinerate"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -137,7 +137,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Shadowburn", ret => StyxWoW.Me.CurrentTarget.HealthPercent <= 20),
                 Spell.Cast("Incinerate"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -186,7 +186,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Shadowburn", ret => StyxWoW.Me.CurrentTarget.HealthPercent <= 20),
                 Spell.Cast("Incinerate"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

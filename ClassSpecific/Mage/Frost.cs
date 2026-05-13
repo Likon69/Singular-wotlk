@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Dynamics;
 using Singular.Helpers;
@@ -43,7 +43,7 @@ namespace Singular.ClassSpecific.Mage
                         Helpers.Common.CreateWaitForLagDuration())),
                 Spell.Cast("Frostbolt", ret => !StyxWoW.Me.CurrentTarget.IsImmune(WoWSpellSchool.Frost)),
                 Spell.Cast("Frostfire Bolt"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -117,7 +117,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.IsMoving),
                 Spell.Cast("Frostbolt", ret => !StyxWoW.Me.CurrentTarget.IsImmune(WoWSpellSchool.Frost)),
                 Spell.Cast("Frostfire Bolt"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -182,7 +182,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.IsMoving),
                 Spell.Cast("Frostbolt"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -245,7 +245,7 @@ namespace Singular.ClassSpecific.Mage
                                                             Unit.NearbyUnfriendlyUnits,
                                                             ClusterType.Radius,
                                                             10f) >= 3),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // Rotation
@@ -267,7 +267,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.IsMoving),
                 Spell.Cast("Frostbolt", ret => !StyxWoW.Me.CurrentTarget.IsImmune(WoWSpellSchool.Frost)),
                 Spell.Cast("Frostfire Bolt"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

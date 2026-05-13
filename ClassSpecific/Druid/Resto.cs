@@ -133,7 +133,7 @@ namespace Singular.ClassSpecific.Druid
                                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
                                 Spell.Buff("Moonfire"),
                                 Spell.Cast("Wrath"),
-                                Movement.CreateMoveToTargetBehavior(true, 35f)
+                                Movement.CreateMoveToTargetBehavior(true, 32f)
                                 )),
                         new Decorator(
                             ret => moveInRange,
@@ -169,7 +169,7 @@ namespace Singular.ClassSpecific.Druid
                             Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
                             Spell.Buff("Moonfire"),
                             Spell.Cast("Wrath"),
-                            Movement.CreateMoveToTargetBehavior(true, 35f)
+                            Movement.CreateMoveToTargetBehavior(true, 32f)
                             ))
                     );
         }

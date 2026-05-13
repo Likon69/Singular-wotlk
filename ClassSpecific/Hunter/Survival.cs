@@ -72,7 +72,7 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Arcane Shot", ret => StyxWoW.Me.ManaPercent > 40),
                 Spell.Cast("Steady Shot"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -144,7 +144,7 @@ namespace Singular.ClassSpecific.Hunter
                 Common.CreateHunterTrapBehavior("Immolation Trap", false),
                 Spell.Cast("Steady Shot"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -199,7 +199,7 @@ namespace Singular.ClassSpecific.Hunter
                         Common.CreateHunterTrapBehavior("Explosive Trap"),
                         Spell.Cast("Multi-Shot"),
                         Spell.Cast("Steady Shot"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )
                     ),
 
@@ -213,7 +213,7 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Aimed Shot", ret => StyxWoW.Me.ManaPercent > 50),
                 Spell.Cast("Arcane Shot", ret => StyxWoW.Me.ManaPercent > 40),
                 Spell.Cast("Steady Shot"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

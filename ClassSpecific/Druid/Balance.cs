@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Singular.Dynamics;
@@ -109,7 +109,7 @@ namespace Singular.ClassSpecific.Druid
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
                 Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -162,7 +162,7 @@ namespace Singular.ClassSpecific.Druid
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
                 Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -239,7 +239,7 @@ namespace Singular.ClassSpecific.Druid
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
                 Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

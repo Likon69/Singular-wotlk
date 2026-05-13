@@ -123,7 +123,7 @@ namespace Singular.ClassSpecific.Priest
                                 Spell.Cast("Penance"),
                                 Spell.Cast("Holy Fire"),
                                 Spell.Cast("Smite"),
-                                Movement.CreateMoveToTargetBehavior(true, 35f)
+                                Movement.CreateMoveToTargetBehavior(true, 32f)
                                 )),
                         new Decorator(
                             ret => moveInRange,
@@ -171,7 +171,7 @@ namespace Singular.ClassSpecific.Priest
                         Spell.Cast("Penance"),
                         Spell.Cast("Holy Fire"),
                         Spell.Cast("Smite"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         ))
                 );
         }

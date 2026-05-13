@@ -136,7 +136,7 @@ namespace Singular.ClassSpecific.Shaman
                             ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 40 * 40,
                             Totems.CreateSetTotems()),
                         Spell.Cast("Lightning Bolt"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 Common.CreateAutoAttack(true),
@@ -191,7 +191,7 @@ namespace Singular.ClassSpecific.Shaman
                         Spell.Cast("Lava Lash"),
                         Spell.Cast("Earth Shock"),
                         Spell.Cast("Lightning Bolt"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 Spell.Cast("Stormstrike"),

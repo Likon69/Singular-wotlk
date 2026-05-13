@@ -45,7 +45,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.WaitForCast(true),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.Buff("Immolate", true),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -89,7 +89,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Soul Fire", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Decimation")),
                 Spell.Cast("Shadow Bolt"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -142,7 +142,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Soul Fire", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Decimation")),
                 Spell.Cast("Shadow Bolt"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -194,7 +194,7 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Cast("Soul Fire", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Decimation")),
                 Spell.Cast("Shadow Bolt"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

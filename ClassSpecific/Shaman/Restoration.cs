@@ -80,7 +80,7 @@ namespace Singular.ClassSpecific.Shaman
                                         !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                             Spell.Cast("Earth Shock"),
                             Spell.Cast("Lightning Bolt"),
-                            Movement.CreateMoveToTargetBehavior(true, 35f)
+                            Movement.CreateMoveToTargetBehavior(true, 32f)
                             ))
                     );
         }
@@ -173,7 +173,7 @@ namespace Singular.ClassSpecific.Shaman
                                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                                 Spell.Cast("Earth Shock"),
                                 Spell.Cast("Lightning Bolt"),
-                                Movement.CreateMoveToTargetBehavior(true, 35f)
+                                Movement.CreateMoveToTargetBehavior(true, 32f)
                                 )),
                         new Decorator(
                             ret => moveInRange,

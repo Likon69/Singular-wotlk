@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Dynamics;
@@ -37,7 +37,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Arcane Blast"),
                 Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -73,7 +73,7 @@ namespace Singular.ClassSpecific.Mage
                         Spell.BuffSelf("Arcane Power"),
                         Spell.BuffSelf("Mirror Image"),
                         Spell.Cast("Arcane Blast"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // Reserve mana phase
@@ -90,7 +90,7 @@ namespace Singular.ClassSpecific.Mage
                 // These 2 are just for support for some DPS until we get arcane blast.
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
                 Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -130,7 +130,7 @@ namespace Singular.ClassSpecific.Mage
                         Spell.BuffSelf("Arcane Power"),
                         Spell.BuffSelf("Mirror Image"),
                         Spell.Cast("Arcane Blast"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // Reserve mana phase
@@ -147,7 +147,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
                 Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -203,7 +203,7 @@ namespace Singular.ClassSpecific.Mage
                             ret => StyxWoW.Me.CurrentTarget.DistanceSqr > 10* 10),
 
                         Spell.Cast("Arcane Blast"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // Burn mana phase
@@ -216,7 +216,7 @@ namespace Singular.ClassSpecific.Mage
                         Spell.BuffSelf("Arcane Power"),
                         Spell.BuffSelf("Mirror Image"),
                         Spell.Cast("Arcane Blast"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // Reserve mana phase
@@ -233,7 +233,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
                 Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Dynamics;
 using Singular.Helpers;
@@ -36,7 +36,7 @@ namespace Singular.ClassSpecific.Mage
                     Spell.Cast("Frostfire Bolt")),
                 Spell.Cast("Pyroblast"),
                 Spell.Cast("Fireball"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -99,7 +99,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Pyroblast", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Hot Streak")),
                 Spell.Buff("Living Bomb", true),
                 Spell.Cast("Fireball"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -148,7 +148,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Buff("Living Bomb", true),
                 Spell.Cast("Fireball"),
 
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -208,7 +208,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Pyroblast", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Hot Streak")),
                 Spell.Buff("Living Bomb", true),
                 Spell.Cast("Fireball"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 

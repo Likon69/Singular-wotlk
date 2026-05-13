@@ -91,7 +91,7 @@ namespace Singular.ClassSpecific.Druid
                         Movement.CreateMoveToLosBehavior(ret => (WoWPlayer)ret),
                         new Decorator(ret => SingularSettings.Instance.Druid.CatRaidRezz,
                                       Spell.Cast("Rebirth", ret => (WoWPlayer)ret)),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)))
+                        Movement.CreateMoveToTargetBehavior(true, 32f)))
                 );
         }
 

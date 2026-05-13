@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Dynamics;
@@ -54,7 +54,7 @@ namespace Singular.ClassSpecific.Priest
                 
                 // Smite fallback for lowbies without Mind Blast
                 Spell.Cast("Smite", ret => !SpellManager.HasSpell("Mind Blast")),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -136,7 +136,7 @@ namespace Singular.ClassSpecific.Priest
                 
                 // Fallback to wand if OOM
                 Helpers.Common.CreateUseWand(ret => SingularSettings.Instance.Priest.UseWand),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -184,7 +184,7 @@ namespace Singular.ClassSpecific.Priest
                            (StyxWoW.Me.IsMoving && !StyxWoW.Me.IsCasting)),
                 Spell.Cast("Shadowfiend"),
                 Spell.Cast("Mind Flay"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
@@ -265,7 +265,7 @@ namespace Singular.ClassSpecific.Priest
                         Spell.Cast("Shadowfiend", ret => StyxWoW.Me.CurrentTarget.HealthPercent >= 60),
                         
                         Spell.Cast("Mind Flay"),
-                        Movement.CreateMoveToTargetBehavior(true, 35f)
+                        Movement.CreateMoveToTargetBehavior(true, 32f)
                         )),
 
                 // WotLK Trash Rotation (apply DoTs only if target will live 12+ seconds)
@@ -276,7 +276,7 @@ namespace Singular.ClassSpecific.Priest
                 Spell.Cast("Mind Blast"),
                 Spell.Cast("Shadow Word: Death", ret => StyxWoW.Me.CurrentTarget.HealthPercent <= 25),
                 Spell.Cast("Mind Flay"),
-                Movement.CreateMoveToTargetBehavior(true, 35f)
+                Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
 
