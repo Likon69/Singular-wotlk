@@ -21,9 +21,12 @@ namespace Singular.ClassSpecific.Shaman
     {
         public static Composite CreateSetTotems()
         {
+            if (SingularSettings.Instance.Shaman.DisableTotems)
+                return new ActionAlwaysFail();
+
             return new PrioritySelector(
                 new Decorator(
-                    ret => !SpellManager.HasSpell("Call of the Elements"),
+                    ret => !StyxWoW.Me.Mounted && !SpellManager.HasSpell("Call of the Elements"),
                     new PrioritySelector(
                         // Earth totem: match by slot type (reliable), check Active state via GetTotemInfo Lua
                         new PrioritySelector(
@@ -58,6 +61,10 @@ namespace Singular.ClassSpecific.Shaman
                     ret =>
                         {
                             // Hell yeah this is long, but its all clear to read
+                            // Can't cast totems while mounted — prevent 6s retry spam during flight.
+                            if (StyxWoW.Me.Mounted)
+                                return false;
+
                             if (!SpellManager.HasSpell("Call of the Elements"))
                                 return false;
 
@@ -201,13 +208,27 @@ namespace Singular.ClassSpecific.Shaman
         /// <remarks>
         ///   Created 3/26/2011.
         /// </remarks>
-        public static void RecallTotems()
+        public static Composite CreateRecallTotems()
         {
+            if (SingularSettings.Instance.Shaman.DisableTotems)
+                return new ActionAlwaysFail();
+
+            // Throttle(2): allow at most 1 recall-cast success per 2-second window.
+            // Prevents spam when ObjectManager hasn't removed the totem units yet after Totemic Recall fires.
+            // Pattern from Singular 6.X.X Totems.cs CreateRecallTotems().
+            return new Throttle(2, new Action(r => RecallTotems() ? RunStatus.Success : RunStatus.Failure));
+        }
+
+        public static bool RecallTotems()
+        {
+            if (!NeedToRecallTotems)
+                return false;
+
             Logger.Write("Recalling totems!");
             if (SpellManager.HasSpell("Totemic Recall"))
             {
                 SpellManager.Cast("Totemic Recall");
-                return;
+                return true;
             }
 
             WoWTotemInfo[] totems = StyxWoW.Me.Totems.ToArray();
@@ -218,6 +239,8 @@ namespace Singular.ClassSpecific.Shaman
                     DestroyTotem(t.Type);
                 }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -434,6 +457,7 @@ namespace Singular.ClassSpecific.Shaman
 
         #region Helper shit
 
+        public static bool TotemsDisabled => SingularSettings.Instance.Shaman.DisableTotems;
         public static bool NeedToRecallTotems { get { return TotemsInRange == 0 && StyxWoW.Me.Totems.Count(t => t.Unit != null) != 0; } }
         public static int TotemsInRange { get { return TotemsInRangeOf(StyxWoW.Me); } }
 
