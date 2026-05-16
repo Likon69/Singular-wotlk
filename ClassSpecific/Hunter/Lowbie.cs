@@ -39,5 +39,14 @@ namespace Singular.ClassSpecific.Hunter
                 Movement.CreateMoveToTargetBehavior(true, 30f)
                 );
         }
+
+        [Class(WoWClass.Hunter)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbieHunterRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

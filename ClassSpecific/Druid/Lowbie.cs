@@ -58,5 +58,14 @@ namespace Singular.ClassSpecific.Druid
                 Movement.CreateMoveToTargetBehavior(true, 30f)
                 );
         }
+
+        [Spec(TalentSpec.Lowbie)]
+        [Class(WoWClass.Druid)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbieDruidRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

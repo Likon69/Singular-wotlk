@@ -88,5 +88,14 @@ namespace Singular.ClassSpecific.Warrior
                 Movement.CreateMoveToTargetBehavior(true, 5f)
                 );
         }
+
+        [Spec(TalentSpec.Lowbie)]
+        [Class(WoWClass.Warrior)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbieWarriorRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

@@ -55,5 +55,14 @@ namespace Singular.ClassSpecific.Rogue
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
         }
+
+        [Class(WoWClass.Rogue)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbieRogueRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

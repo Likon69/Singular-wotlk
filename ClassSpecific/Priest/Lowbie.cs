@@ -34,5 +34,14 @@ namespace Singular.ClassSpecific.Priest
                 Movement.CreateMoveToTargetBehavior(true, 25f)
                 );
         }
+
+        [Class(WoWClass.Priest)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbiePriestRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

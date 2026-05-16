@@ -51,5 +51,14 @@ namespace Singular.ClassSpecific.Warlock
                 Movement.CreateMoveToTargetBehavior(true, 25f)
                 );
         }
+
+        [Class(WoWClass.Warlock)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbieWarlockRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

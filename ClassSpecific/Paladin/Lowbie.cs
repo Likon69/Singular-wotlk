@@ -82,5 +82,14 @@ namespace Singular.ClassSpecific.Paladin
                     Spell.BuffSelf("Devotion Aura")
                     );
         }
+
+        [Class(WoWClass.Paladin)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateLowbiePaladinRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }

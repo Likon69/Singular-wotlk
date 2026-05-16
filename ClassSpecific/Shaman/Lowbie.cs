@@ -87,5 +87,14 @@ namespace Singular.ClassSpecific.Shaman
                     Movement.CreateMoveToTargetBehavior(true, 20f)
                     );
         }
+
+        [Class(WoWClass.Shaman)]
+        [Spec(TalentSpec.Lowbie)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateShamanLowbieRest()
+        {
+            return Rest.CreateDefaultRestBehaviour();
+        }
     }
 }
