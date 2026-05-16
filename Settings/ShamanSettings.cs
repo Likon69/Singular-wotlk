@@ -16,6 +16,12 @@ namespace Singular.Settings
 
         #region Category: Totems
         [Setting]
+        [DefaultValue(false)]
+        [Category("Totems")]
+        [DisplayName("Disable Totems")]
+        [Description("When checked, Singular will not cast any totems (set/recall/individual). Useful when gathering.")]
+        public bool DisableTotems { get; set; }
+        [Setting]
         [DefaultValue(WoWTotem.None)]
         [Category("Totems")]
         [Description("The totem to use for this slot. Select 'None' for automatic usage.")]

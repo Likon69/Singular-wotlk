@@ -139,21 +139,21 @@ namespace Singular.Settings
         public bool NoHealBalanceAndFeral { get; set; }
 
         [Setting]
-        [DefaultValue(20)]
+        [DefaultValue(40)]
         [Category("Common")]
         [DisplayName("Healing Touch Health (Balance and Feral)")]
         [Description("Healing Touch will be used at this value.")]
         public int NonRestoHealingTouch { get; set; }
 
         [Setting]
-        [DefaultValue(40)]
+        [DefaultValue(85)]
         [Category("Common")]
         [DisplayName("Rejuvenation Health (Balance and Feral)")]
         [Description("Rejuvenation will be used at this value")]
         public int NonRestoRejuvenation { get; set; }
 
         [Setting]
-        [DefaultValue(40)]
+        [DefaultValue(65)]
         [Category("Common")]
         [DisplayName("Regrowth Health (Balance and Feral)")]
         [Description("Regrowth will be used at this value")]
@@ -169,7 +169,7 @@ namespace Singular.Settings
         public bool RaidHealNonCombat { get; set; }
 
         [Setting]
-        [DefaultValue(50)]
+        [DefaultValue(75)]
         [Category("Common")]
         [DisplayName("Lifebloom Health (Balance and Feral")]
         [Description("Lifebloom will be used at this value")]
