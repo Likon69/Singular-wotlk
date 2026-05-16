@@ -130,7 +130,7 @@ namespace Singular.ClassSpecific.Hunter
                 // Rotation (WotLK priority: Kill Shot ? Explosive Shot ? Explosive Trap ? Kill Command ? Serpent Sting ? Black Arrow ? Aimed Shot ? Arcane Shot ? Steady Shot)
                 Spell.Buff("Wing Clip"),
                 Spell.Cast("Scatter Shot", ret => StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange + 3f),
-                Spell.Cast("Raptor Strike"),
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
                 Spell.Cast("Kill Shot"),
                 Spell.Cast("Explosive Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),

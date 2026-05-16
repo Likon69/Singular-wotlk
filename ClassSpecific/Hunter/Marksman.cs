@@ -152,7 +152,7 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet),
                 Spell.Buff("Wing Clip"),
                 Spell.Cast("Scatter Shot", ret => StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange + 3f),
-                Spell.Cast("Raptor Strike"),
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
                 Spell.Buff("Serpent Sting", true),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
                 Spell.Cast("Chimera Shot"),

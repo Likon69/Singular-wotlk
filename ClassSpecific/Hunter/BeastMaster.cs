@@ -69,7 +69,8 @@ namespace Singular.ClassSpecific.Hunter
                                    SpellManager.Spells["Kill Command"].CooldownTimeLeft.TotalSeconds < 2)))),
 
                 // WotLK BM Rotation: Kill Command -> Kill Shot -> Explosive Trap -> Serpent Sting -> Multi-Shot -> Arcane Shot -> Steady Shot
-                Spell.Cast("Raptor Strike"),
+                // WotLK: hunters have 8-yard minimum range on ranged spells — only use Raptor Strike if already at melee
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
@@ -140,7 +141,7 @@ namespace Singular.ClassSpecific.Hunter
                 // WotLK BM PvP Rotation
                 Spell.Buff("Wing Clip"),
                 Spell.Cast("Scatter Shot", ret => StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange + 3f),
-                Spell.Cast("Raptor Strike"),
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
