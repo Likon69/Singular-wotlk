@@ -59,8 +59,7 @@ namespace Singular.ClassSpecific.Shaman
                         new Action(ret => SpellManager.Cast("Flametongue Weapon", null)))),
                 
                 Spell.Cast("Lightning Shield", ret => StyxWoW.Me, ret => !StyxWoW.Me.HasAura("Lightning Shield", 2)),
-                new Decorator(ret => Totems.NeedToRecallTotems,
-                    new Action(ret => Totems.RecallTotems()))
+                Totems.CreateRecallTotems()
                 );
         }
 
@@ -170,14 +169,17 @@ namespace Singular.ClassSpecific.Shaman
                 // Totem stuff
                 // Pop the ele on bosses
                 Spell.BuffSelf("Fire Elemental Totem",
-                    ret => StyxWoW.Me.CurrentTarget != null &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget != null &&
                            (StyxWoW.Me.CurrentTarget.Elite || Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 3) &&
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Magma Totem",
-                    ret => Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10*10 && u.IsTargetingMeOrPet) >= 3 &&
+                    ret => !Totems.TotemsDisabled &&
+                           Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10*10 && u.IsTargetingMeOrPet) >= 3 &&
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental || t.WoWTotem == WoWTotem.Magma)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget != null &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget != null &&
                            StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
@@ -247,10 +249,12 @@ namespace Singular.ClassSpecific.Shaman
                 // Totem stuff
                 // Pop the ele on bosses
                 Spell.BuffSelf("Fire Elemental Totem", 
-                    ret => StyxWoW.Me.HealthPercent >= 80 && StyxWoW.Me.CurrentTarget.DistanceSqr < 20*20 && 
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.HealthPercent >= 80 && StyxWoW.Me.CurrentTarget.DistanceSqr < 20*20 && 
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
@@ -295,7 +299,8 @@ namespace Singular.ClassSpecific.Shaman
                     ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 3,
                     new PrioritySelector(
                         Spell.BuffSelf("Magma Totem", 
-                            ret => !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.Magma)),
+                            ret => !Totems.TotemsDisabled &&
+                                   !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.Magma)),
                         Spell.Buff("Flame Shock", true),
                         // WotLK QC: Lava Lash bonus damage comes from Flametongue Weapon on offhand,
                         // not from Flame Shock on target (that's Cata's FS-spread mechanic).
@@ -313,10 +318,12 @@ namespace Singular.ClassSpecific.Shaman
                 // Totem stuff
                 // Pop the ele on bosses
                 Spell.BuffSelf("Fire Elemental Totem", 
-                    ret => StyxWoW.Me.CurrentTarget.IsBoss() && StyxWoW.Me.CurrentTarget.DistanceSqr < 20*20 &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.IsBoss() && StyxWoW.Me.CurrentTarget.DistanceSqr < 20*20 &&
                            !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
