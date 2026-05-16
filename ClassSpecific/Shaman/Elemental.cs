@@ -36,8 +36,7 @@ namespace Singular.ClassSpecific.Shaman
                         )),
 
                 Spell.Cast("Lightning Shield", ret => StyxWoW.Me, ret => !StyxWoW.Me.HasAura("Lightning Shield", 2)),
-                new Decorator(ret => Totems.NeedToRecallTotems,
-                    new Action(ret => Totems.RecallTotems()))
+                Totems.CreateRecallTotems()
                 );
         }
 
@@ -139,9 +138,10 @@ namespace Singular.ClassSpecific.Shaman
 
                 // Totem stuff
                 // Pop the ele on bosses
-                Spell.BuffSelf("Fire Elemental Totem", ret => StyxWoW.Me.CurrentTarget.Elite && !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
+                Spell.BuffSelf("Fire Elemental Totem", ret => !Totems.TotemsDisabled && StyxWoW.Me.CurrentTarget.Elite && !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
@@ -187,13 +187,14 @@ namespace Singular.ClassSpecific.Shaman
                     ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 3,
                     new PrioritySelector(
                         // Pop the ele on bosses
-                        Spell.BuffSelf("Fire Elemental Totem", ret => !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
+                        Spell.BuffSelf("Fire Elemental Totem", ret => !Totems.TotemsDisabled && !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                         Spell.Cast("Chain Lightning", ret => Clusters.GetBestUnitForCluster(Unit.UnfriendlyUnitsNearTarget(15f), ClusterType.Chained, 12))
                         )),
 
                 // Totem stuff
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
@@ -243,9 +244,10 @@ namespace Singular.ClassSpecific.Shaman
                 
                 // Totem stuff
                 // Pop the ele on bosses
-                Spell.BuffSelf("Fire Elemental Totem", ret => StyxWoW.Me.CurrentTarget.IsBoss() && !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
+                Spell.BuffSelf("Fire Elemental Totem", ret => !Totems.TotemsDisabled && StyxWoW.Me.CurrentTarget.IsBoss() && !StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.FireElemental)),
                 Spell.BuffSelf("Searing Totem",
-                    ret => StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
+                    ret => !Totems.TotemsDisabled &&
+                           StyxWoW.Me.CurrentTarget.Distance < Totems.GetTotemRange(WoWTotem.Searing) - 2f &&
                            !StyxWoW.Me.Totems.Any(
                                 t => t.Unit != null && t.WoWTotem == WoWTotem.Searing &&
                                      t.Unit.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Totems.GetTotemRange(WoWTotem.Searing)) &&
