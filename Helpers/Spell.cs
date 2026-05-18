@@ -30,12 +30,13 @@ namespace Singular.Helpers
         }
 
         // Temp wrapper for upcoming HB API
-        // WotLK 3.3.5a: GetSpellCooldown() takes a spell NAME string, not a numeric ID.
-        // Passing the numeric ID is treated as a spellbook slot (valid ~1-100); large IDs
-        // like 5217 (Tiger's Fury) or 20572 (Blood Fury) always return 0.
+        // WotLK 3.3.5a: GetSpellCooldown() requires the localized spell name.
+        // On non-English clients (Russian, German...) passing the English name returns 0.
+        // Fix: GetSpellInfo(id) returns the localized name — works on ALL clients.
         public static TimeSpan CooldownTimeLeft(this WoWSpell spell)
         {
-            var luaTime = Lua.GetReturnVal<double>(string.Format("local x,y=GetSpellCooldown(\"{{0}}\"); if not x then return 0 end; return x+y-GetTime()", spell.Name), 0);
+            var luaTime = Lua.GetReturnVal<double>(
+                string.Format("local n=GetSpellInfo({0}); if not n then return 0 end; local x,y=GetSpellCooldown(n); if not x then return 0 end; return x+y-GetTime()", spell.Id), 0);
             if (luaTime <= 0)
                 return TimeSpan.Zero;
             return TimeSpan.FromSeconds(luaTime);
