@@ -86,7 +86,29 @@ namespace Singular.ClassSpecific.Mage
 
                 Spell.BuffSelf("Conjure Refreshment", ret => !Gotfood && !ShouldSummonTable),
                 // WotLK: Conjure Food for levels below 74 (before Conjure Refreshment)
-                Spell.BuffSelf("Conjure Food", ret => !Gotfood && !SpellManager.HasSpell("Conjure Refreshment")),
+                new Decorator(
+                    ret => SpellManager.CanCast("Conjure Food") && !Gotfood && !SpellManager.HasSpell("Conjure Refreshment"),
+                    new Sequence(
+                        new DecoratorContinue(ret => StyxWoW.Me.IsMoving,
+                            new Sequence(
+                                new Action(ret => WoWMovement.MoveStop()),
+                                new WaitContinue(2, ret => !StyxWoW.Me.IsMoving, new ActionAlwaysSucceed()))),
+                        new Action(ret => SpellManager.Cast("Conjure Food")),
+                        new WaitContinue(2, ret => StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
+                        new WaitContinue(10, ret => !StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
+                        new WaitContinue(2, ret => Gotfood, new ActionAlwaysSucceed()))),
+                // WotLK: Conjure Water for levels below 74 (before Conjure Refreshment)
+                new Decorator(
+                    ret => SpellManager.CanCast("Conjure Water") && !Gotwater && !SpellManager.HasSpell("Conjure Refreshment"),
+                    new Sequence(
+                        new DecoratorContinue(ret => StyxWoW.Me.IsMoving,
+                            new Sequence(
+                                new Action(ret => WoWMovement.MoveStop()),
+                                new WaitContinue(2, ret => !StyxWoW.Me.IsMoving, new ActionAlwaysSucceed()))),
+                        new Action(ret => SpellManager.Cast("Conjure Water")),
+                        new WaitContinue(2, ret => StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
+                        new WaitContinue(10, ret => !StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
+                        new WaitContinue(2, ret => Gotwater, new ActionAlwaysSucceed()))),
 
                 Spell.BuffSelf("Conjure Mana Gem", ret => !HaveManaGem), //for dealing with managems
                 new Decorator(
@@ -109,7 +131,21 @@ namespace Singular.ClassSpecific.Mage
                                                              1487,   // Conjured Pumpernickel (level 15)
                                                              1114,   // Conjured Rye (level 5)
                                                              1113,   // Conjured Bread (level 1)
+                                                             5349,   // Conjured Muffin
                                                          };
+        // MageWaterIds added by xyFaded
+        private static readonly uint[] MageWaterIds = new uint[]
+                                                            {
+                                                                22018,  // Conjured Glacier Water (65)
+                                                                30703,  // Conjured Mountain Spring Water (60)
+                                                                8079,   // Conjured Crystal Water (55)
+                                                                8078,   // Conjured Sparkling Water (45)
+                                                                8077,   // Conjured Mineral Water (35)
+                                                                3772,   // Conjured Spring Water (25)
+                                                                2136,   // Conjured Purified Water (15)
+                                                                2288,   // Conjured Fresh Water (5)
+                                                                5350,   // Conjured Water
+                                                            };
 
         private const uint ArcanePowder = 17020;
 
@@ -155,6 +191,8 @@ namespace Singular.ClassSpecific.Mage
         }
 
         public static bool Gotfood { get { return StyxWoW.Me.BagItems.Any(item => MageFoodIds.Contains(item.Entry)); } }
+        // Gotwater added by xyFaded
+        public static bool Gotwater { get { return StyxWoW.Me.BagItems.Any(item => MageWaterIds.Contains(item.Entry)); } }
 
         // WotLK Mana Gem item IDs (Sapphire/Emerald/Ruby/Citrine/Jade/Agate)
         private static readonly uint[] ManaGemIds = new uint[] { 33312, 22044, 8008, 8007, 5513, 5514 };
