@@ -97,16 +97,34 @@ namespace Singular.ClassSpecific.Paladin
 
         private static Composite CreatePaladinBlessBehavior()
         {
-            // TODO WotLK: Add Blessing of Wisdom support for mana users (healers/casters).
-            // In WotLK, Wisdom is a separate blessing from Might (merged in Cata 4.0.1).
-            // Currently only Kings+Might are supported.
             return
                 new PrioritySelector(
+                    // WotLK: Blessing of Wisdom — separate from Might in WotLK (merged in Cata 4.0.1)
+                    Spell.Cast("Blessing of Wisdom",
+                        ret => StyxWoW.Me,
+                        ret =>
+                        {
+                            if (SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Wisdom)
+                                return false;
+                            var players = new List<WoWPlayer>();
+
+                            if (StyxWoW.Me.IsInRaid)
+                                players.AddRange(StyxWoW.Me.RaidMembers);
+                            else if (StyxWoW.Me.IsInParty)
+                                players.AddRange(StyxWoW.Me.PartyMembers);
+
+                            players.Add(StyxWoW.Me);
+
+                            return players.Any(
+                                        p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
+                                             !p.HasAura("Blessing of Wisdom"));
+                        }),
                     Spell.Cast("Blessing of Kings",
                         ret => StyxWoW.Me,
                         ret =>
                         {
-                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might)
+                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
+                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)
                                 return false;
                             var players = new List<WoWPlayer>();
 
@@ -128,6 +146,8 @@ namespace Singular.ClassSpecific.Paladin
                         ret => StyxWoW.Me,
                         ret =>
                         {
+                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)
+                                return false;
                             var players = new List<WoWPlayer>();
 
                             if (StyxWoW.Me.IsInRaid)
