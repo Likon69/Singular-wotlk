@@ -29,12 +29,16 @@ namespace Singular.ClassSpecific.Paladin
         {
             return new PrioritySelector(
                 //Spell.WaitForCast(),
+                // Lay on Hands: emergency heal, gives Forbearance — only use if no Forbearance active
+                Spell.Cast("Lay on Hands", ret => StyxWoW.Me,
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.LayOnHandsHealth &&
+                                  !StyxWoW.Me.HasAura("Forbearance")),
+                // Holy Light: primary heal (big, slow) — uses HolyLightHealth threshold
                 Spell.Heal("Holy Light", ret => StyxWoW.Me,
-                           ret =>
-                           !SpellManager.HasSpell("Flash of Light") &&
-                           StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.RetributionHealHealth),
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.HolyLightHealth),
+                // Flash of Light: fast cheap fallback — uses FlashOfLightHealth threshold
                 Spell.Heal("Flash of Light", ret => StyxWoW.Me,
-                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.RetributionHealHealth));
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.FlashOfLightHealth));
         }
 
         [Class(WoWClass.Paladin)]
