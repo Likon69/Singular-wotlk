@@ -99,8 +99,6 @@ namespace Singular.ClassSpecific.Druid
                 // Refresh MF/SF
                 Spell.Cast("Moonfire", 
                     ret => (StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3) ||
-                            // WotLK: Nature's Grace = Balance index 7 (Tier 3). Index 1 = Starlight Wrath (Cata moved NG to index 1).
-                            (!StyxWoW.Me.HasAura("Nature's Grace") && TalentManager.GetCount(1, 7) > 0) ||
                             StyxWoW.Me.IsMoving),
 
                 // Make sure we keep IS up. Clip the last tick. (~3s)
@@ -154,8 +152,6 @@ namespace Singular.ClassSpecific.Druid
                 // Refresh MF
                 Spell.Cast("Moonfire",
                     ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3 ||
-                            // WotLK: Nature's Grace = Balance index 7 (Tier 3). Index 1 = Starlight Wrath (Cata moved NG to index 1).
-                            (!StyxWoW.Me.HasAura("Nature's Grace") && TalentManager.GetCount(1, 7) > 0) ||
                             StyxWoW.Me.IsMoving),
                 // Make sure we keep IS up. Clip the last tick. (~3s)
                 Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
@@ -229,8 +225,6 @@ namespace Singular.ClassSpecific.Druid
                 // Refresh MF
                 Spell.Cast("Moonfire",
                     ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3 ||
-                            // WotLK: Nature's Grace = Balance index 7 (Tier 3). Index 1 = Starlight Wrath (Cata moved NG to index 1).
-                            (!StyxWoW.Me.HasAura("Nature's Grace") && TalentManager.GetCount(1, 7) > 0) ||
                             StyxWoW.Me.IsMoving),
 
                 // Make sure we keep IS up. Clip the last tick. (~3s)
