@@ -109,7 +109,7 @@ namespace Singular.ClassSpecific.Warrior
         {
             return new PrioritySelector(
                 //Heal
-                Spell.Buff("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.BuffSelf("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 //Recklessness if low on hp or have Deathwish up or as gank protection
                 Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 // Heroic Fury
@@ -310,7 +310,7 @@ namespace Singular.ClassSpecific.Warrior
         {
             return new PrioritySelector(
                 //Heal
-                Spell.Buff("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.BuffSelf("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 //Recklessness if low on hp or have Deathwish up or as gank protection
                 Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 // Heroic Fury
@@ -510,7 +510,7 @@ namespace Singular.ClassSpecific.Warrior
         {
             return new PrioritySelector(
                 //Heal
-                Spell.Buff("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.BuffSelf("Enraged Regeneration", ret => StyxWoW.Me.HealthPercent < 60 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 //Recklessness if low on hp or have Deathwish up or as gank protection
                 Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 // Heroic Fury

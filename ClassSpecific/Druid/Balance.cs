@@ -19,31 +19,57 @@ namespace Singular.ClassSpecific.Druid
     {
         # region Properties & Fields
 
-        private static string _oldDps = "Wrath";
+        // WotLK Eclipse: Solar (48517) empowers Wrath; Lunar (48518) empowers Starfire.
+        private const int EclipseSolarSpellId = 48517;
+        private const int EclipseLunarSpellId = 48518;
 
         private static int StarfallRange { get { return TalentManager.HasGlyph("Focus") ? 20 : 40; } }
 
-        private static string BoomkinDpsSpell
-        {
-            get
-            {
-                if (StyxWoW.Me.HasAura("Eclipse (Solar)"))
-                {
-                    _oldDps = "Wrath";
-                }
-                // This doesn't seem to register for whatever reason.
-                else if (StyxWoW.Me.HasAura("Eclipse (Lunar)")) //Eclipse (Lunar) => 48518
-                {
-                    _oldDps = "Starfire";
-                }
+        private static bool HasEclipseSolar =>
+            StyxWoW.Me.HasAura(EclipseSolarSpellId) ||
+            StyxWoW.Me.HasAura("Eclipse (Solar)") ||
+            StyxWoW.Me.ActiveAuras.ContainsKey("Eclipse (Solar)");
 
-                return _oldDps;
-            }
-        }
+        private static bool HasEclipseLunar =>
+            StyxWoW.Me.HasAura(EclipseLunarSpellId) ||
+            StyxWoW.Me.HasAura("Eclipse (Lunar)") ||
+            StyxWoW.Me.ActiveAuras.ContainsKey("Eclipse (Lunar)");
+
+        private static bool CurrentTargetHasDots =>
+            StyxWoW.Me.CurrentTarget != null &&
+            StyxWoW.Me.CurrentTarget.HasMyAura("Moonfire") &&
+            StyxWoW.Me.CurrentTarget.HasMyAura("Insect Swarm");
 
         static WoWUnit BestAoeTarget
         {
             get { return Clusters.GetBestUnitForCluster(Unit.NearbyUnfriendlyUnits.Where(u => u.Combat && !u.IsCrowdControlled()), ClusterType.Radius, 8f); }
+        }
+
+        private static Composite CreateBalanceSingleTargetRotation()
+        {
+            return new PrioritySelector(
+                Spell.Cast("Moonfire",
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           (!StyxWoW.Me.CurrentTarget.HasMyAura("Moonfire") ||
+                            StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3 ||
+                            (StyxWoW.Me.IsMoving && !StyxWoW.Me.CurrentTarget.HasMyAura("Moonfire")))),
+
+                Spell.Cast("Insect Swarm",
+                    ret => StyxWoW.Me.CurrentTarget != null &&
+                           (!StyxWoW.Me.CurrentTarget.HasMyAura("Insect Swarm") ||
+                            StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3)),
+
+                Spell.Cast("Typhoon",
+                    ret => SpellManager.HasSpell("Typhoon") &&
+                           CurrentTargetHasDots &&
+                           StyxWoW.Me.CurrentTarget != null &&
+                           StyxWoW.Me.CurrentTarget.Distance <= 33),
+
+                // Eclipse proc: spam empowered spell until the buff expires.
+                Spell.Cast("Starfire", ret => HasEclipseLunar),
+                // Solar proc or standard filler (Wrath spam to fish for Eclipse).
+                Spell.Cast("Wrath", ret => !HasEclipseLunar)
+                );
         }
 
         #endregion
@@ -63,11 +89,10 @@ namespace Singular.ClassSpecific.Druid
                 //Heals, will not heal if in a party or if disabled via setting
                 Common.CreateNonRestoHeals(),
 
+                // Re-enter Moonkin immediately after instant HoTs; defer only during cast-time heals (see Common.ShouldDeferBalanceForm).
+                Spell.BuffSelf("Moonkin Form", ret => !Common.ShouldDeferBalanceForm()),
 
-                //Innervate
-                Spell.Buff("Innervate", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
-
-                Spell.BuffSelf("Moonkin Form"),
+                Spell.BuffSelf("Innervate", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
 
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
@@ -80,8 +105,7 @@ namespace Singular.ClassSpecific.Druid
                 new Decorator(
                     ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 3,
                     new PrioritySelector(
-                        // WotLK QC: Removed Eclipse (Solar)/(Lunar) gates — in WotLK Eclipse only buffs Wrath damage or Starfire crit,
-                        // it does NOT buff Nature/Arcane schools like in Cata. Use cooldowns on CD.
+                        // WotLK: Eclipse only buffs Wrath (Solar) or Starfire (Lunar) — not Starfall/Treant schools.
                         Spell.CastOnGround("Force of Nature", 
                             ret => StyxWoW.Me.CurrentTarget.Location),
                         Spell.Cast("Starfall", 
@@ -96,17 +120,7 @@ namespace Singular.ClassSpecific.Druid
                                         u.Combat && !u.IsCrowdControlled() && !u.HasMyAura("Insect Swarm")))
                         )),
 
-                // Refresh MF/SF
-                Spell.Cast("Moonfire", 
-                    ret => (StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3) ||
-                            StyxWoW.Me.IsMoving),
-
-                // Make sure we keep IS up. Clip the last tick. (~3s)
-                Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
-
-                // And then just spam Wrath/Starfire
-                Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                CreateBalanceSingleTargetRotation(),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -126,10 +140,9 @@ namespace Singular.ClassSpecific.Druid
             return new PrioritySelector(
                 Spell.WaitForCast(true),
 
-                //Inervate
-                Spell.Buff("Innervate", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
+                Spell.BuffSelf("Innervate", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
 
-                Spell.BuffSelf("Moonkin Form"),
+                Spell.BuffSelf("Moonkin Form", ret => !Common.ShouldDeferBalanceForm()),
                 Spell.BuffSelf("Barkskin", 
                     ret => StyxWoW.Me.IsCrowdControlled() || StyxWoW.Me.HealthPercent < 40),
                 Safers.EnsureTarget(),
@@ -149,15 +162,7 @@ namespace Singular.ClassSpecific.Druid
                 Spell.Buff("Faerie Fire", 
                     ret => StyxWoW.Me.CurrentTarget.Class == WoWClass.Rogue ||
                            StyxWoW.Me.CurrentTarget.Class == WoWClass.Druid),
-                // Refresh MF
-                Spell.Cast("Moonfire",
-                    ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3 ||
-                            StyxWoW.Me.IsMoving),
-                // Make sure we keep IS up. Clip the last tick. (~3s)
-                Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
-                // And then just spam Wrath/Starfire
-                Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                CreateBalanceSingleTargetRotation(),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -186,7 +191,7 @@ namespace Singular.ClassSpecific.Druid
 
                 Spell.BuffSelf("Innervate", 
                     ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
-                Spell.BuffSelf("Moonkin Form"),
+                Spell.BuffSelf("Moonkin Form", ret => !Common.ShouldDeferBalanceForm()),
 
                 Safers.EnsureTarget(),
                 Movement.CreateMoveToLosBehavior(),
@@ -222,17 +227,7 @@ namespace Singular.ClassSpecific.Druid
                                         u.Combat && !u.IsCrowdControlled() &&!u.HasMyAura("Insect Swarm")))
                         )),
 
-                // Refresh MF
-                Spell.Cast("Moonfire",
-                    ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Moonfire", true).TotalSeconds < 3 ||
-                            StyxWoW.Me.IsMoving),
-
-                // Make sure we keep IS up. Clip the last tick. (~3s)
-                Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
-
-                // And then just spam Wrath/Starfire
-                Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                CreateBalanceSingleTargetRotation(),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }

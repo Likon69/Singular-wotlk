@@ -142,6 +142,67 @@ namespace Singular.ClassSpecific.Druid
 
         #region Non Resto Healing
 
+        private static System.DateTime _deferMoonkinForHealUntil = System.DateTime.MinValue;
+
+        private static bool IsCastTimeSelfHeal(string spellName)
+        {
+            return spellName == "Healing Touch" || spellName == "Regrowth";
+        }
+
+        /// <summary>
+        ///   Balance must leave Moonkin to cast heals. Only defer re-entering Moonkin while a cast-time heal
+        ///   (Regrowth / Healing Touch) is in progress, or briefly while waiting for that cast to start.
+        ///   Do not defer for instant HoTs (Rejuvenation, Lifebloom) — return to Moonkin immediately after those.
+        /// </summary>
+        public static bool ShouldDeferBalanceForm()
+        {
+            if (SingularSettings.Instance.Druid.NoHealBalanceAndFeral || StyxWoW.Me.HasAura("Drink"))
+            {
+                _deferMoonkinForHealUntil = System.DateTime.MinValue;
+                return false;
+            }
+
+            if (StyxWoW.Me.IsCasting && StyxWoW.Me.CastingSpell != null &&
+                IsCastTimeSelfHeal(StyxWoW.Me.CastingSpell.Name))
+                return true;
+
+            if (StyxWoW.Me.Shapeshift != ShapeshiftForm.Moonkin && WouldCastTimeSelfHealNext())
+            {
+                if (_deferMoonkinForHealUntil == System.DateTime.MinValue)
+                    _deferMoonkinForHealUntil = System.DateTime.UtcNow.AddMilliseconds(750);
+
+                if (System.DateTime.UtcNow < _deferMoonkinForHealUntil)
+                    return true;
+            }
+            else
+            {
+                _deferMoonkinForHealUntil = System.DateTime.MinValue;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///   Next heal CreateNonRestoHeals would cast that has a cast bar (requires leaving Moonkin).
+        ///   Instant HoTs are excluded so Moonkin can be restored right after Rejuvenation / Lifebloom.
+        /// </summary>
+        private static bool WouldCastTimeSelfHealNext()
+        {
+            var me = StyxWoW.Me;
+            var settings = SingularSettings.Instance.Druid;
+
+            if (me.HealthPercent <= settings.NonRestoprocc && me.ActiveAuras.ContainsKey("Predator's Swiftness"))
+                return true;
+
+            if (me.HealthPercent <= settings.NonRestoRegrowth && !me.HasAura("Regrowth"))
+                return true;
+
+            if (me.HealthPercent <= settings.NonRestoHealingTouch)
+                return true;
+
+            return false;
+        }
+
         public static Composite CreateNonRestoHeals()
         {
             return
