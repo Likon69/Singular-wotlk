@@ -809,9 +809,14 @@ namespace Singular.Helpers
                             //    return true;
                             //}
 
-                            // If requirements don't meet anymore, stop casting and let it continue
+                            // If requirements don't meet anymore, stop casting and let it continue.
+                            // Do not interrupt a heal already in progress (e.g. Rejuv ticks can push HP above threshold mid-Regrowth).
                             if (!requirements(ret))
                             {
+                                if (StyxWoW.Me.IsCasting && StyxWoW.Me.CastingSpell != null &&
+                                    StyxWoW.Me.CastingSpell.Name == name)
+                                    return false;
+
                                 SpellManager.StopCasting();
                                 return true;
                             }
