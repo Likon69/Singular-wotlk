@@ -98,6 +98,9 @@ namespace Singular.ClassSpecific.Druid
                 // Make sure we keep IS up. Clip the last tick. (~3s)
                 Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
 
+                // Cast Typhoon if we have it
+                Spell.Cast("Typhoon", ret => SingularSettings.Instance.Druid.UseTyphoon && SpellManager.HasSpell("Typhoon")),
+
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
                 Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),

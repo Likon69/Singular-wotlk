@@ -187,6 +187,13 @@ namespace Singular.Settings
         [Description("Use Starfall.")]
         public bool UseStarfall { get; set; }
 
+        [Setting]
+        [DefaultValue(false)]
+        [Category("Balance")]
+        [DisplayName("Typhoon")]
+        [Description("Use Typhoon.")]
+        public bool UseTyphoon { get; set; }
+
         #endregion
 
         #region Resto
