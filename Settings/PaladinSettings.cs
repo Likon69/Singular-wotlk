@@ -19,6 +19,13 @@ namespace Singular.Settings
         
         #region Common
         [Setting]
+        [DefaultValue(PaladinSeal.Auto)]
+        [Category("Common")]
+        [DisplayName("Seal")]
+        [Description("The seal to be used for combat. Added by xyFaded")]
+        public PaladinSeal Seal { get; set; }
+        
+        [Setting]
         [DefaultValue(PaladinAura.Auto)]
         [Category("Common")]
         [DisplayName("Aura")]

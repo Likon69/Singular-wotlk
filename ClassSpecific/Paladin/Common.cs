@@ -14,6 +14,17 @@ using TreeSharp;
 
 namespace Singular.ClassSpecific.Paladin
 {
+    public enum PaladinSeal
+    {
+        Auto,
+        Command,
+        Corruption,
+        Justice,
+        Light,
+        Righteousness,
+        Vengeance,
+        Wisdom
+    }
     public enum PaladinAura
     {
         Auto,
@@ -77,10 +88,27 @@ namespace Singular.ClassSpecific.Paladin
                                 ret =>
                                 SingularSettings.Instance.Paladin.Aura == PaladinAura.Auto &&
                                 TalentManager.CurrentSpec == TalentSpec.RetributionPaladin),
-                            Spell.BuffSelf("Seal of Vengeance", ret => !SpellManager.HasSpell("Seal of Corruption")),
-                            Spell.BuffSelf("Seal of Corruption"),
-                            Spell.BuffSelf("Seal of Righteousness", ret => !SpellManager.HasSpell("Seal of Vengeance") && !SpellManager.HasSpell("Seal of Corruption"))
-                            )),
+                            // Select seal added by xyFaded
+                            new Decorator(
+                                ret => SingularSettings.Instance.Paladin.Seal != PaladinSeal.Auto,
+                                new PrioritySelector(
+                                    Spell.BuffSelf("Seal of Command", ret => SpellManager.HasSpell("Seal of Command") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Command),
+                                    Spell.BuffSelf("Seal of Corruption", ret => SpellManager.HasSpell("Seal of Corruption") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Corruption),
+                                    Spell.BuffSelf("Seal of Justice", ret => SpellManager.HasSpell("Seal of Justice") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Justice),
+                                    Spell.BuffSelf("Seal of Light", ret => SpellManager.HasSpell("Seal of Light") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Light),
+                                    Spell.BuffSelf("Seal of Righteousness", ret => SpellManager.HasSpell("Seal of Righteousness") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Righteousness),
+                                    Spell.BuffSelf("Seal of Vengeance", ret => SpellManager.HasSpell("Seal of Vengeance") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Vengeance),
+                                    Spell.BuffSelf("Seal of Wisdom", ret => SpellManager.HasSpell("Seal of Wisdom") && SingularSettings.Instance.Paladin.Seal == PaladinSeal.Wisdom)
+                                )
+                            ),
+                            new Decorator(
+                                ret => SingularSettings.Instance.Paladin.Seal == PaladinSeal.Auto,
+                                new PrioritySelector(
+                                    Spell.BuffSelf("Seal of Vengeance", ret => !SpellManager.HasSpell("Seal of Corruption")),
+                                    Spell.BuffSelf("Seal of Corruption"),
+                                    Spell.BuffSelf("Seal of Righteousness", ret => !SpellManager.HasSpell("Seal of Vengeance") && !SpellManager.HasSpell("Seal of Corruption"))
+                                )
+                            ),
                     new Decorator(
                         ret => SingularSettings.Instance.Paladin.Aura != PaladinAura.Auto,
                         new PrioritySelector(
@@ -92,7 +120,8 @@ namespace Singular.ClassSpecific.Paladin
                             Spell.BuffSelf("Retribution Aura", ret => SingularSettings.Instance.Paladin.Aura == PaladinAura.Retribution),
                             Spell.BuffSelf("Crusader Aura", ret => SingularSettings.Instance.Paladin.Aura == PaladinAura.Crusader)
                             ))
-                    );
+                    
+                    )));
         }
 
         private static Composite CreatePaladinBlessBehavior()
