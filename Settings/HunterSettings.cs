@@ -40,6 +40,20 @@ namespace Singular.Settings
         [Description("Will be used in battlegrounds no matter what this is set")]
         public bool UseDisengage { get; set; }
 
+        [Setting]
+        [DefaultValue(5)]
+        [Category("Common")]
+        [DisplayName("Viper Mana %")]
+        [Description("Switch to Aspect of the Viper when mana drops below this percent")]
+        public int ViperManaPercent { get; set; }
+
+        [Setting]
+        [DefaultValue(80)]
+        [Category("Common")]
+        [DisplayName("Viper Resume Mana %")]
+        [Description("Switch back to Aspect of the Dragonhawk when mana reaches this percent")]
+        public int ViperResumeManaPercent { get; set; }
+
         #endregion
     }
 }

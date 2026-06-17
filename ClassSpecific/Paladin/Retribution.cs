@@ -110,7 +110,8 @@ namespace Singular.ClassSpecific.Paladin
                     Spell.Cast("Exorcism", ret => StyxWoW.Me.ActiveAuras.ContainsKey("The Art of War") || !SpellManager.HasSpell("The Art of War")),
 
                     // In WotLK 3.3.5a, Paladins don't have Holy Power - use simpler rotation
-                    Spell.Cast("Crusader Strike"),
+                    // Same condition as BG rotation: skip CS if 4+ enemies (replace with Divine Storm)
+                    Spell.Cast("Crusader Strike", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm")),
                     Spell.Cast("Divine Storm", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
                     Spell.Cast("Judgement of Light"),
                     Spell.Cast("Holy Wrath", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
@@ -177,7 +178,8 @@ namespace Singular.ClassSpecific.Paladin
                     Spell.Cast("Exorcism", ret => StyxWoW.Me.ActiveAuras.ContainsKey("The Art of War") || !SpellManager.HasSpell("The Art of War")),
 
                     // WotLK: Holy Power doesn't exist - simplified rotation
-                    Spell.Cast("Crusader Strike", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm")),
+                    // Throttle: prevent log spam when on CD (lag tolerance in CanCast allows re-cast every ~100ms)
+                    new Throttle(1, Spell.Cast("Crusader Strike", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm"))),
                     Spell.Cast("Divine Storm", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
                     Spell.Cast("Judgement of Light"),
                     Spell.Cast("Holy Wrath"),

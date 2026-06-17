@@ -178,6 +178,7 @@ namespace Singular.ClassSpecific.Druid
                 Spell.Cast("Feral Charge - Cat"),
                 Spell.Cast("Dash",
                     ret => StyxWoW.Me.CurrentTarget.Distance > Spell.MeleeRange + 2f &&
+                           !StyxWoW.Me.HasAura("Dash") &&
                            (!SpellManager.HasSpell("Feral Charge - Cat") ||
                            SpellManager.Spells["Feral Charge - Cat"].CooldownTimeLeft.TotalSeconds >= 3)),
                 Spell.Cast("Pounce"),
@@ -362,6 +363,7 @@ namespace Singular.ClassSpecific.Druid
                            !Settings.CatNormalPullStealth || !StyxWoW.Me.HasAura("Prowl")),
                 Spell.Cast("Dash",
                            ret => StyxWoW.Me.CurrentTarget.Distance > Spell.MeleeRange + 2f &&
+                                  !StyxWoW.Me.HasAura("Dash") &&
                                   (!SpellManager.HasSpell("Feral Charge - Cat") ||
                                    SpellManager.Spells["Feral Charge - Cat"].CooldownTimeLeft.TotalSeconds >= 3)),
                 Spell.Cast("Pounce"),

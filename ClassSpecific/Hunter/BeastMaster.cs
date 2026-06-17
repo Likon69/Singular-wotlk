@@ -44,6 +44,9 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Concussive Shot", ret => StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid),
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
                 // Defensive Stuff
@@ -53,8 +56,8 @@ namespace Singular.ClassSpecific.Hunter
                 Common.CreateHunterTrapOnAddBehavior("Freezing Trap"),
                 Spell.Cast( "Mend Pet",
                     ret => StyxWoW.Me.GotAlivePet && !StyxWoW.Me.Pet.HasAura("Mend Pet") &&
-                    (StyxWoW.Me.Pet.HealthPercent < SingularSettings.Instance.Hunter.MendPetPercent || (StyxWoW.Me.Pet.HappinessPercent < 90 && TalentManager.HasGlyph("Mend Pet")))), 
-              
+                    (StyxWoW.Me.Pet.HealthPercent < SingularSettings.Instance.Hunter.MendPetPercent || (StyxWoW.Me.Pet.HappinessPercent < 90 && TalentManager.HasGlyph("Mend Pet")))),
+
                 // Cooldowns only when there are multiple mobs on normal rotation
                 new Decorator(
                     ret => Unit.NearbyUnfriendlyUnits.Count(u => u.IsTargetingMeOrPet) >= 2,
@@ -65,12 +68,13 @@ namespace Singular.ClassSpecific.Hunter
                                    !StyxWoW.Me.HasAnyAura("Bloodlust", "Heroism", "The Beast Within" /* WotLK QC: Removed Time Warp (Cata Mage) */)),
 
                         Spell.BuffSelf("Bestial Wrath",
-                            ret => StyxWoW.Me.GotAlivePet && (!SpellManager.HasSpell("Kill Command") || 
+                            ret => StyxWoW.Me.GotAlivePet && (!SpellManager.HasSpell("Kill Command") ||
                                    SpellManager.Spells["Kill Command"].CooldownTimeLeft.TotalSeconds < 2)))),
 
                 // WotLK BM Rotation: Kill Command -> Kill Shot -> Explosive Trap -> Serpent Sting -> Multi-Shot -> Arcane Shot -> Steady Shot
                 // WotLK: hunters have 8-yard minimum range on ranged spells — only use Raptor Strike if already at melee
-                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
+                // Raptor Strike fix: explicit cooldown check (6s CD in WotLK)
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && !SpellManager.Spells["Raptor Strike"].Cooldown),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
@@ -115,13 +119,16 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Concussive Shot", ret => StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid),
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
                 // Defensive Stuff
                 Spell.Cast(
                     "Intimidation", ret => StyxWoW.Me.CurrentTarget.IsAlive && StyxWoW.Me.GotAlivePet &&
                                            (StyxWoW.Me.CurrentTarget.CurrentTarget == null || StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me)),
-                
+
                 Common.CreateHunterTrapOnAddBehavior("Freezing Trap"),
 
                 Spell.Cast("Mend Pet",
@@ -135,13 +142,14 @@ namespace Singular.ClassSpecific.Hunter
                            !StyxWoW.Me.HasAnyAura("Bloodlust", "Heroism", "The Beast Within" /* WotLK QC: Removed Time Warp (Cata Mage) */)),
 
                 Spell.BuffSelf("Bestial Wrath",
-                    ret => StyxWoW.Me.GotAlivePet && (!SpellManager.HasSpell("Kill Command") || 
+                    ret => StyxWoW.Me.GotAlivePet && (!SpellManager.HasSpell("Kill Command") ||
                             SpellManager.Spells["Kill Command"].CooldownTimeLeft.TotalSeconds < 2)),
 
                 // WotLK BM PvP Rotation
                 Spell.Buff("Wing Clip"),
                 Spell.Cast("Scatter Shot", ret => StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange + 3f),
-                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5),
+                // Raptor Strike fix: explicit cooldown check (6s CD in WotLK)
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && !SpellManager.Spells["Raptor Strike"].Cooldown),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
@@ -159,7 +167,7 @@ namespace Singular.ClassSpecific.Hunter
         #endregion
 
         #region Instance Rotation
-        
+
         [Class(WoWClass.Hunter)]
         [Spec(TalentSpec.BeastMasteryHunter)]
         [Behavior(BehaviorType.Pull)]
@@ -188,6 +196,9 @@ namespace Singular.ClassSpecific.Hunter
 
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
 
@@ -214,7 +225,7 @@ namespace Singular.ClassSpecific.Hunter
                         Movement.CreateMoveToTargetBehavior(true, 32f)
                         )
                     ),
-                    
+
                 // WotLK BM Single Target: Kill Command -> Kill Shot -> Serpent Sting -> Multi-Shot -> Arcane Shot -> Steady Shot
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),

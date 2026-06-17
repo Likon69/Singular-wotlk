@@ -54,6 +54,9 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Concussive Shot", ret => StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid),
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
                 // Defensive Stuff
@@ -125,6 +128,9 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Cast("Concussive Shot", ret => StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid),
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
                 // Defensive Stuff
@@ -206,6 +212,9 @@ namespace Singular.ClassSpecific.Hunter
 
                 Spell.Buff("Hunter's Mark"),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
+                // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
+                Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
 
@@ -214,8 +223,8 @@ namespace Singular.ClassSpecific.Hunter
                     (StyxWoW.Me.Pet.HealthPercent < SingularSettings.Instance.Hunter.MendPetPercent || (StyxWoW.Me.Pet.HappinessPercent < 90 && TalentManager.HasGlyph("Mend Pet")))),
 
                 // Cooldowns
-                Spell.BuffSelf("Readiness", 
-                    ret => !StyxWoW.Me.HasAura("Rapid Fire") && SpellManager.HasSpell("Rapid Fire") && 
+                Spell.BuffSelf("Readiness",
+                    ret => !StyxWoW.Me.HasAura("Rapid Fire") && SpellManager.HasSpell("Rapid Fire") &&
                            SpellManager.Spells["Rapid Fire"].Cooldown),
                 Spell.BuffSelf("Rapid Fire",
                     ret => (StyxWoW.Me.HasAura("Call of the Wild") ||
