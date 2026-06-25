@@ -48,6 +48,15 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.BuffSelf("Aspect of the Dragonhawk"),
                 Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
                 Spell.BuffSelf("Track Hidden"),
+                // WotLK MM fix: Trueshot Aura is a MM talent (tier 4) that gives +10% ranged AP to the raid.
+                // HB 4.3.4/5.4.8/6.x never had it because Cata+ made it automatic.
+                // Spell ID 19506 (Rank 1, the only rank in WotLK), 2 min CD in WotLK 3.3.5a.
+                // Spell.BuffSelf handles !HasAura + CanCast (GCD + cooldown) + DoubleCastPreventionDict
+                // (updated unconditionally for instant spells by the Spell.cs fix).
+                new Decorator(
+                    ret => TalentManager.CurrentSpec == TalentSpec.MarksmanshipHunter &&
+                           SpellManager.HasSpell("Trueshot Aura"),
+                    Spell.BuffSelf("Trueshot Aura")),
                 new Decorator(ctx => SingularSettings.Instance.DisablePetUsage && StyxWoW.Me.GotAlivePet,
                     new Action(ctx => SpellManager.Cast("Dismiss Pet"))),
 
@@ -58,6 +67,25 @@ namespace Singular.ClassSpecific.Hunter
                         )
                     )
                 );
+        }
+
+        // WotLK MM fix: re-cast Trueshot Aura if it was dispelled or lost after a death/rez in combat.
+        // PreCombatBuffs only runs out of combat, so this CombatBuffs entry covers the mid-fight case.
+        // Spell ID 19506, 2 min CD in WotLK 3.3.5a, lasts 30 min when active.
+        // Spell.BuffSelf handles !HasAura + CanCast (GCD + cooldown) + DoubleCastPreventionDict
+        // (updated unconditionally for instant spells by the Spell.cs fix), so the bot doesn't
+        // spam CastSpellById every pulse while the 2 min CD is active.
+        [Class(WoWClass.Hunter)]
+        [Spec(TalentSpec.BeastMasteryHunter)]
+        [Spec(TalentSpec.SurvivalHunter)]
+        [Spec(TalentSpec.MarksmanshipHunter)]
+        [Behavior(BehaviorType.CombatBuffs)]
+        [Context(WoWContext.All)]
+        public static Composite CreateHunterCombatBuffs()
+        {
+            return Spell.BuffSelf("Trueshot Aura",
+                ret => TalentManager.CurrentSpec == TalentSpec.MarksmanshipHunter &&
+                       SpellManager.HasSpell("Trueshot Aura"));
         }
 
         public static Composite CreateHunterBackPedal()
