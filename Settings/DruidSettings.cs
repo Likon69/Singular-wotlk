@@ -175,6 +175,13 @@ namespace Singular.Settings
         [Description("Lifebloom will be used at this value")]
         public int NonRestoLifebloom { get; set; }
 
+        [Setting]
+        [DefaultValue(50)]
+        [Category("Common")]
+        [DisplayName("Barkskin Health (PvE)")]
+        [Description("Barkskin will be used when health drops below this value.")]
+        public int PveBarkskinHealth { get; set; }
+
         // End of IloveAnimals settings
         #endregion
 

@@ -1,4 +1,5 @@
 using System.Linq;
+using Singular;
 using Singular.Dynamics;
 using Singular.Helpers;
 using Singular.Managers;
@@ -136,6 +137,37 @@ namespace Singular.ClassSpecific.Druid
                 Rest.CreateDefaultRestBehaviour(),
                 Spell.Resurrect("Revive")
                 );
+        }
+
+        #endregion
+
+        #region PvE Defensives
+
+        /// <summary>
+        /// True when health is below the PvE Barkskin threshold.
+        /// </summary>
+        public static bool ShouldUsePveBarkskin()
+        {
+            return StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Druid.PveBarkskinHealth;
+        }
+
+        /// <summary>
+        /// Defensive Barkskin for PvE — used when health drops below the configured threshold.
+        /// </summary>
+        public static Composite CreatePveBarkskinBehavior()
+        {
+            return Spell.BuffSelf("Barkskin",
+                ret =>
+                {
+                    if (!ShouldUsePveBarkskin())
+                        return false;
+
+                    var threshold = SingularSettings.Instance.Druid.PveBarkskinHealth;
+                    Logger.WriteDebug(string.Format(
+                        "PvE Barkskin: health {0:F0}% (threshold {1}%)",
+                        StyxWoW.Me.HealthPercent, threshold));
+                    return true;
+                });
         }
 
         #endregion

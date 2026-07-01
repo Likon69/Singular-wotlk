@@ -2,6 +2,7 @@
 using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Settings;
+using Singular;
 
 using Styx;
 using Styx.Helpers;
@@ -91,6 +92,44 @@ namespace Singular.Helpers
 
                                    return RunStatus.Success;
                                }));
+        }
+
+        /// <summary>
+        ///   Target and face the specified unit before casting on them (e.g. multi-dot spread).
+        ///   Use inside a Sequence before SpellManager.Cast — Success when ready, Failure to retry next pulse.
+        /// </summary>
+        public static Composite CreateEnsureTargetAndFaceBehavior(UnitSelectionDelegate toUnit)
+        {
+            return new Action(ret =>
+            {
+                if (toUnit == null || toUnit(ret) == null)
+                    return RunStatus.Failure;
+
+                var unit = toUnit(ret);
+
+                // Self casts do not need a target switch or facing
+                if (unit.IsMe)
+                    return RunStatus.Success;
+
+                // Switch target when casting on a different unit than CurrentTarget
+                if (StyxWoW.Me.CurrentTarget != unit)
+                {
+                    Logger.WriteDebug("Switching target to " + unit.SafeName() + " before cast");
+                    unit.Target();
+                    return RunStatus.Failure;
+                }
+
+                // Face the unit before casting — prevents cast failures on mobs behind the player
+                if (!SingularSettings.Instance.DisableAllMovement && !StyxWoW.Me.IsMoving &&
+                    !StyxWoW.Me.IsSafelyFacing(unit, 70f))
+                {
+                    Logger.WriteDebug("Facing " + unit.SafeName() + " before cast");
+                    unit.Face();
+                    return RunStatus.Failure;
+                }
+
+                return RunStatus.Success;
+            });
         }
 
         /// <summary>

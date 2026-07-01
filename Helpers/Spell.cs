@@ -311,6 +311,8 @@ namespace Singular.Helpers
                 new Sequence( 
                     new DecoratorContinue(ret => StyxWoW.Me.Mounted && !name.Contains("Aura") && !name.Contains("Presence") && !name.Contains("Stance"),
                         Common.CreateDismount("Casting spell")),
+                    // Target and face off-target units before casting (multi-dot, Seed of Corruption, etc.)
+                    Movement.CreateEnsureTargetAndFaceBehavior(onUnit),
                     new Action(
                         ret =>
                         {
@@ -406,12 +408,14 @@ namespace Singular.Helpers
             return new Decorator(
                 ret =>
                 requirements != null && requirements(ret) && onUnit != null && onUnit(ret) != null && SpellManager.CanCast(spellId, onUnit(ret), true),
-                new Action(
-                    ret =>
-                    {
-                        Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
-                        SpellManager.CastSpellById(spellId);
-                    })
+                new Sequence(
+                    Movement.CreateEnsureTargetAndFaceBehavior(onUnit),
+                    new Action(
+                        ret =>
+                        {
+                            Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
+                            SpellManager.Cast(spellId, onUnit(ret));
+                        }))
                 );
         }
 
