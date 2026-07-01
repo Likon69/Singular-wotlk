@@ -105,5 +105,16 @@ namespace Singular.ClassSpecific
                         Spell.Cast("War Stomp"))
                     ));
         }
+        
+        //Herbalism heal(Combat only) - Lifeblood
+        public static Composite CreateHerbHealingBehaviour()
+        {
+            return new PrioritySelector(
+
+                new Decorator(
+                    ret => StyxWoW.Me.IsInCombat && SpellManager.CanCast("Lifeblood") && StyxWoW.Me.HealthPercent < SingularSettings.Instance.LifebloodHP,
+                    Spell.Cast("Lifeblood"))
+                );
+        }
     }
 }

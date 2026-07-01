@@ -173,6 +173,17 @@ namespace Singular.Settings
         
         #endregion
 
+        #region Category: Herbalism-Heal
+
+        [Setting]
+        [DefaultValue(50)]
+        [Category("Herbalism-Heal")]
+        [DisplayName("Lifeblood HP")]
+        [Description("Uses Lifeblood when HP falls below this %.")]
+        public int LifebloodHP { get; set; }
+        
+        #endregion
+
         #region Category: Tanking
 
         [Setting]
