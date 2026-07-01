@@ -2,6 +2,7 @@
 using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Settings;
+using Singular;
 
 using Styx;
 using Styx.Helpers;
@@ -91,6 +92,59 @@ namespace Singular.Helpers
 
                                    return RunStatus.Success;
                                }));
+        }
+
+        /// <summary>
+        /// True when a hostile cast target differs from CurrentTarget and needs target/face before casting.
+        /// Fixes multi-dot spread (e.g. Balance Moonfire on mob behind player) where CreateFaceTargetBehavior
+        /// only faces CurrentTarget. Skips self, friendlies, and in-progress casts.
+        /// </summary>
+        public static bool NeedsOffTargetCastSetup(WoWUnit unit)
+        {
+            if (unit == null || unit.IsMe || unit.IsFriendly)
+                return false;
+
+            if (StyxWoW.Me.IsCasting)
+                return false;
+
+            return StyxWoW.Me.CurrentTarget != unit;
+        }
+
+        /// <summary>
+        /// Target and face a hostile off-target unit before casting. Use only when NeedsOffTargetCastSetup is true.
+        /// Success = ready to cast; Failure = retry next pulse (target switch or still turning).
+        /// </summary>
+        public static Composite CreateEnsureTargetAndFaceBehavior(UnitSelectionDelegate toUnit)
+        {
+            return new Action(ret =>
+            {
+                if (toUnit == null || toUnit(ret) == null)
+                    return RunStatus.Failure;
+
+                var unit = toUnit(ret);
+
+                if (!NeedsOffTargetCastSetup(unit))
+                    return RunStatus.Success;
+
+                // Switch target to the cast unit
+                if (StyxWoW.Me.CurrentTarget != unit)
+                {
+                    Logger.WriteDebug("Off-target cast: switching to " + unit.SafeName());
+                    unit.Target();
+                    return RunStatus.Failure;
+                }
+
+                // Face before casting — prevents cast failures on mobs behind the player
+                if (!SingularSettings.Instance.DisableAllMovement && !StyxWoW.Me.IsMoving &&
+                    !StyxWoW.Me.IsSafelyFacing(unit, 70f))
+                {
+                    Logger.WriteDebug("Off-target cast: facing " + unit.SafeName());
+                    unit.Face();
+                    return RunStatus.Failure;
+                }
+
+                return RunStatus.Success;
+            });
         }
 
         /// <summary>

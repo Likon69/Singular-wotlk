@@ -311,6 +311,10 @@ namespace Singular.Helpers
                 new Sequence( 
                     new DecoratorContinue(ret => StyxWoW.Me.Mounted && !name.Contains("Aura") && !name.Contains("Presence") && !name.Contains("Stance"),
                         Common.CreateDismount("Casting spell")),
+                    // Off-target hostile casts only (multi-dot, Seed of Corruption) — skips heals and CurrentTarget casts
+                    new DecoratorContinue(
+                        ret => Movement.NeedsOffTargetCastSetup(onUnit(ret)),
+                        Movement.CreateEnsureTargetAndFaceBehavior(onUnit)),
                     new Action(
                         ret =>
                         {
@@ -406,12 +410,16 @@ namespace Singular.Helpers
             return new Decorator(
                 ret =>
                 requirements != null && requirements(ret) && onUnit != null && onUnit(ret) != null && SpellManager.CanCast(spellId, onUnit(ret), true),
-                new Action(
-                    ret =>
-                    {
-                        Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
-                        SpellManager.CastSpellById(spellId);
-                    })
+                new Sequence(
+                    new DecoratorContinue(
+                        ret => Movement.NeedsOffTargetCastSetup(onUnit(ret)),
+                        Movement.CreateEnsureTargetAndFaceBehavior(onUnit)),
+                    new Action(
+                        ret =>
+                        {
+                            Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
+                            SpellManager.Cast(spellId, onUnit(ret));
+                        }))
                 );
         }
 
