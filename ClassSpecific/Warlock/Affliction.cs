@@ -49,7 +49,16 @@ namespace Singular.ClassSpecific.Warlock
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
                 Helpers.Common.CreateAutoAttack(true),
+                // Opener: prefer Unstable Affliction, but fall back to the core DoTs / Shadow Bolt
+                // so LOW-LEVEL Affliction warlocks (who don't have UA yet) actually START combat.
+                // Without this the pull had only UA — an unknown spell at low level — so the bot
+                // targeted + moved into range then STALLED until the pet/mob initiated (up to ~30s).
+                // Spell.Buff/Cast no-op for spells you don't know, so higher levels are unaffected.
                 Spell.Buff("Unstable Affliction", true),
+                Spell.Buff("Haunt", true),
+                Spell.Buff("Curse of Agony", true),
+                Spell.Buff("Corruption", true),
+                Spell.Cast("Shadow Bolt"),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
