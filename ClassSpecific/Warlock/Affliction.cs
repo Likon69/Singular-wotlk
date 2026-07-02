@@ -37,6 +37,24 @@ namespace Singular.ClassSpecific.Warlock
 
         #region Normal Rotation
 
+        /// <summary>
+        /// Shared single-target DoT application, called from both Pull and Combat so the spell
+        /// list lives in one place (Singular 5.4.8 / 6.x.x pattern). Spell.Buff is a no-op for
+        /// spells the character doesn't know, so a low-level Affliction warlock (Unstable
+        /// Affliction is learned at 68) simply applies whatever DoTs they have — which also gives
+        /// Pull a castable opener — while a high-level warlock keeps the full priority.
+        /// </summary>
+        private static Composite CreateApplyAfflictionDotsBehavior()
+        {
+            return new PrioritySelector(
+                // WotLK: Only one curse per target — use Curse of Agony (Affliction DPS curse), skip CoE to avoid ping-pong
+                Spell.Buff("Haunt", true),
+                Spell.Buff("Curse of Agony", true),
+                Spell.Buff("Corruption", true),
+                Spell.Buff("Unstable Affliction", true, ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Unstable Affliction", true).TotalSeconds < 3, "")
+                );
+        }
+
         [Class(WoWClass.Warlock)]
         [Spec(TalentSpec.AfflictionWarlock)]
         [Behavior(BehaviorType.Pull)]
@@ -49,7 +67,9 @@ namespace Singular.ClassSpecific.Warlock
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
                 Helpers.Common.CreateAutoAttack(true),
-                Spell.Buff("Unstable Affliction", true),
+                // Apply our DoTs to open. Low-level warlocks (no Unstable Affliction until 68) get
+                // a castable opener via the shared helper instead of stalling with no attack.
+                CreateApplyAfflictionDotsBehavior(),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -80,12 +100,8 @@ namespace Singular.ClassSpecific.Warlock
                 Spell.Buff("Fear", ret => Targeting.Instance.TargetList.ElementAtOrDefault(1), ret => !StyxWoW.Me.CurrentTarget.HasAura("Fear")),
                 Spell.Buff("Fear", ret => StyxWoW.Me.HealthPercent < 80),
 
-                // Single target rotation
-                // WotLK: Only one curse per target — use Curse of Agony (Affliction DPS curse), skip CoE to avoid ping-pong
-                Spell.Buff("Haunt", true),
-                Spell.Buff("Curse of Agony", true),
-                Spell.Buff("Corruption", true),
-                Spell.Buff("Unstable Affliction", true, ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Unstable Affliction", true).TotalSeconds < 3, ""),
+                // Single target rotation — DoTs via the shared helper (see CreateApplyAfflictionDotsBehavior)
+                CreateApplyAfflictionDotsBehavior(),
                 // WotLK QC: Removed Soulburn aura check (Cata 4.0.1 — does not exist in WotLK)
                 Spell.Cast("Drain Life", ret => StyxWoW.Me.HealthPercent < 80),
                 Spell.Cast("Drain Soul", ret => StyxWoW.Me.CurrentTarget.HealthPercent < 25),
