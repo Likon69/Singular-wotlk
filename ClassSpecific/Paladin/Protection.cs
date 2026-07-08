@@ -44,13 +44,13 @@ namespace Singular.ClassSpecific.Paladin
                 // WotLK 969 rotation: keep Holy Shield up for block chance + holy damage on block
                 Spell.BuffSelf("Holy Shield"),
 
-                // Seal twisting. If our mana gets stupid low, just throw on wisdom to get some mana back quickly, then put our main seal back on.
-                // This is Seal of Vengeance (Alliance) / Seal of Corruption (Horde) once we get it, Righteousness when we dont.
-                // WotLK uses Seal of Wisdom for mana regen (renamed to Seal of Insight in Cata 4.0.1)
-                Spell.BuffSelf("Seal of Wisdom", ret => StyxWoW.Me.ManaPercent < 25),
-                Spell.BuffSelf("Seal of Vengeance", ret => StyxWoW.Me.ManaPercent >= 25 && !SpellManager.HasSpell("Seal of Corruption")),
-                Spell.BuffSelf("Seal of Corruption", ret => StyxWoW.Me.ManaPercent >= 25),
-                Spell.BuffSelf("Seal of Righteousness", ret => StyxWoW.Me.ManaPercent >= 25 && !SpellManager.HasSpell("Seal of Vengeance") && !SpellManager.HasSpell("Seal of Corruption")),
+                // Seal selection. Honors SingularSettings.Instance.Paladin.Seal (single source of
+                // truth for the user's seal choice) and performs spec-aware seal twisting when set
+                // to Auto. Replaces the previous hardcoded Seal of Vengeance/Corruption/Righteousness
+                // list which ignored the user setting and switched to Righteousness on enter combat
+                // even when the user had picked Seal of Command. Singular 5.4.8 CreatePaladinSealBehavior
+                // pattern, WotLK-adapted (no Seal of Truth, no Seal of Insight).
+                Common.CreatePaladinSealBehavior(),
 
                 // Defensive
                 Spell.BuffSelf("Hand of Freedom",

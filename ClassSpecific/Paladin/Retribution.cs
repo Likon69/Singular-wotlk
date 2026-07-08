@@ -88,11 +88,11 @@ namespace Singular.ClassSpecific.Paladin
                     Spell.BuffSelf("Divine Shield", ret => StyxWoW.Me.HealthPercent <= 20 && !StyxWoW.Me.HasAura("Forbearance") && (!StyxWoW.Me.HasAura("Horde Flag") || !StyxWoW.Me.HasAura("Alliance Flag"))),
                     Spell.BuffSelf("Divine Protection", ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.DivineProtectionHealthRet),
 
-                    //2	Let's keep up Insight instead of Truth for grinding.  Keep up Righteousness if we need to AoE.  
-                     // WotLK: Seal of Vengeance (Alliance) / Seal of Corruption (Horde) for single target
-                     Spell.BuffSelf("Seal of Vengeance", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 && !SpellManager.HasSpell("Seal of Corruption")),
-                     Spell.BuffSelf("Seal of Corruption", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4),
-                    Spell.BuffSelf("Seal of Righteousness", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
+                    // Seal selection. Honors SingularSettings.Instance.Paladin.Seal and performs
+                    // spec-aware seal twisting when set to Auto. Replaces the hardcoded Vengeance /
+                    // Corruption / Righteousness list which ignored the user setting.
+                    // Singular 5.4.8 CreatePaladinSealBehavior pattern, WotLK-adapted.
+                    Common.CreatePaladinSealBehavior(),
 
                     //7	Blow buffs seperatly.  No reason for stacking while grinding.
                     Spell.BuffSelf("Avenging Wrath", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 3),
@@ -162,9 +162,11 @@ namespace Singular.ClassSpecific.Paladin
 
                     //  Buffs
                     Spell.BuffSelf("Retribution Aura"),
-                    Spell.BuffSelf("Seal of Vengeance", ret => StyxWoW.Me.CurrentTarget.Entry != 28781 && !StyxWoW.Me.CurrentTarget.HasAura("Horde Flag") && !StyxWoW.Me.CurrentTarget.HasAura("Alliance Flag") && !SpellManager.HasSpell("Seal of Corruption")),
-                    Spell.BuffSelf("Seal of Corruption", ret => StyxWoW.Me.CurrentTarget.Entry != 28781 && !StyxWoW.Me.CurrentTarget.HasAura("Horde Flag") && !StyxWoW.Me.CurrentTarget.HasAura("Alliance Flag")),
-                    Spell.BuffSelf("Seal of Justice", ret => StyxWoW.Me.CurrentTarget.Entry == 28781 || StyxWoW.Me.CurrentTarget.HasAura("Horde Flag") || StyxWoW.Me.CurrentTarget.HasAura("Alliance Flag")),
+                    // Seal selection. Honors SingularSettings.Instance.Paladin.Seal and performs
+                    // spec-aware seal twisting when set to Auto. Replaces the hardcoded Vengeance /
+                    // Corruption / Justice list which ignored the user setting.
+                    // Singular 5.4.8 CreatePaladinSealBehavior pattern, WotLK-adapted.
+                    Common.CreatePaladinSealBehavior(),
 
                     Spell.BuffSelf("Avenging Wrath", ret => StyxWoW.Me.CurrentTarget.Distance <= 8),
                     Spell.BuffSelf("Blood Fury", ret => SpellManager.HasSpell("Blood Fury") && StyxWoW.Me.ActiveAuras.ContainsKey("Avenging Wrath")),
@@ -222,10 +224,8 @@ namespace Singular.ClassSpecific.Paladin
                     Spell.BuffSelf("Divine Shield", ret => StyxWoW.Me.HealthPercent <= 20 && !StyxWoW.Me.HasAura("Forbearance") && (!StyxWoW.Me.HasAura("Horde Flag") || !StyxWoW.Me.HasAura("Alliance Flag"))),
                     Spell.BuffSelf("Divine Protection", ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.DivineProtectionHealthRet),
 
-                    //2	seal_of_truth (WotLK: Seal of Vengeance/Corruption)
-                    Spell.BuffSelf("Seal of Vengeance", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 && !SpellManager.HasSpell("Seal of Corruption")),
-                    Spell.BuffSelf("Seal of Corruption", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4),
-                    Spell.BuffSelf("Seal of Righteousness", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
+                    //2	seal_of_truth (WotLK: Seal of Vengeance/Corruption) - replaced by shared helper
+                    Common.CreatePaladinSealBehavior(),
 
                     Spell.BuffSelf("Avenging Wrath", ret => StyxWoW.Me.CurrentTarget.IsBoss()),
                     Spell.BuffSelf("Blood Fury", ret => SpellManager.HasSpell("Blood Fury") && StyxWoW.Me.ActiveAuras.ContainsKey("Avenging Wrath")),
