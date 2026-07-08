@@ -16,6 +16,7 @@ namespace Singular.ClassSpecific.Paladin
 {
     public enum PaladinSeal
     {
+        None,    // sentinel returned by GetBestSeal() when no seal is usable (added for d3c4edd)
         Auto,
         Command,
         Corruption,
