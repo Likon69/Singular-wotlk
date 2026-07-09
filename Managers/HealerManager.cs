@@ -86,11 +86,17 @@ namespace Singular.Managers
                 }
 
                 // If we're horde, and they're not, fuggin ignore them!
+                // Commented out for cross-faction private server support (matches Singular Legion
+                // HealerManager.cs which removed this check for the same reason — WotLK private
+                // servers like Warmane run cross-faction BGs/groups, and the hard faction filter
+                // prevented the bot from healing same-team players of the opposite faction).
+                /*
                 if (p.IsHorde != isHorde)
                 {
                     units.RemoveAt(i);
                     continue;
                 }
+                */
 
                 // They're not in our party/raid. So ignore them. We can't heal them anyway.
                 if (!p.IsInMyPartyOrRaid)
