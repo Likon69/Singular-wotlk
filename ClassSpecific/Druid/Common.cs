@@ -55,13 +55,20 @@ namespace Singular.ClassSpecific.Druid
                     "Mark of the Wild",
                     ret => StyxWoW.Me,
                     // WotLK QC: Removed "Embrace of the Shale Spider" (Cata-only Shale Spider exotic pet buff)
-                    ret =>!StyxWoW.Me.HasAnyAura("Mark of the Wild", "Blessing of Kings")
+                    // WotLK QC: Added "Gift of the Wild" — WotLK spell (id 21849) from Improved Mark of
+                    // the Wild talent or paladin Greater Blessing of Kings equivalent. Without it the
+                    // bot keeps re-casting MoW when the player or a party member only has Gift of the
+                    // Wild active (the upgraded buff) instead of base Mark of the Wild. Matches the
+                    // HB 4.3.4 / Singular 4.3.4 HasAnyAura pattern of listing every buff that should
+                    // suppress the cast.
+                    ret =>!StyxWoW.Me.HasAnyAura("Mark of the Wild", "Gift of the Wild", "Blessing of Kings")
                         || (SingularSettings.Instance.Druid.BuffRaidWithMotw && (!StyxWoW.Me.Combat || (StyxWoW.Me.Combat && SingularSettings.Instance.Druid.CatRaidRebuff)) 
                         && !StyxWoW.Me.HasAura("Prowl") 
                         && Unit.NearbyFriendlyPlayers.Any(unit =>
                                                     unit.Distance <= 30f &&
                                                     !unit.Dead && !unit.IsGhost && unit.IsInMyPartyOrRaid &&
                                                     !unit.HasAnyAura("Mark of the Wild",
+                                                                     "Gift of the Wild",
                                                                      "Blessing of Kings")))
                 ),
                 // Cast Thorns, added by xyFaded
