@@ -179,7 +179,7 @@ namespace Singular.ClassSpecific.Paladin
 
                     // WotLK: Holy Power doesn't exist - simplified rotation
                     // Throttle: prevent log spam when on CD (lag tolerance in CanCast allows re-cast every ~100ms)
-                    new Throttle(1, Spell.Cast("Crusader Strike", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm"))),
+                    new Throttle(1, Spell.Cast("Crusader Strike", ret => (Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm")) && StyxWoW.Me.CurrentTarget.Distance <= 5f)),
                     Spell.Cast("Divine Storm", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
                     Spell.Cast("Judgement of Light"),
                     Spell.Cast("Holy Wrath"),
@@ -243,7 +243,7 @@ namespace Singular.ClassSpecific.Paladin
 
                     //crusader_strike - simplified for WotLK (no Holy Power checks)
                     Spell.Cast("Crusader Strike", ret =>
-                        Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm")),
+                        (Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) < 4 || !SpellManager.HasSpell("Divine Storm")) && StyxWoW.Me.CurrentTarget.Distance <= 5f),
                 //Replace CS with DS during AoE
                     Spell.Cast("Divine Storm", ret =>
                         Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= 4),
