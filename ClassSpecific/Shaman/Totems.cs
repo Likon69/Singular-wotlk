@@ -26,7 +26,7 @@ namespace Singular.ClassSpecific.Shaman
 
             return new PrioritySelector(
                 new Decorator(
-                    ret => !StyxWoW.Me.Mounted && !SpellManager.HasSpell("Call of the Elements"),
+                    ret => !StyxWoW.Me.Mounted,
                     new PrioritySelector(
                         // Earth totem: match by slot type (reliable), check Active state via GetTotemInfo Lua
                         new PrioritySelector(
@@ -56,106 +56,11 @@ namespace Singular.ClassSpecific.Shaman
                                 new Sequence(
                                     new Action(ret => Logger.Write("Casting {0} Totem", GetWaterTotem().ToString().CamelToSpaced())),
                                     new Action(ret => SpellManager.CastSpellById(GetWaterTotem().GetTotemSpellId())))))
-                        )),
-                new Decorator(
-                    ret =>
-                        {
-                            // Hell yeah this is long, but its all clear to read
-                            // Can't cast totems while mounted — prevent 6s retry spam during flight.
-                            if (StyxWoW.Me.Mounted)
-                                return false;
-
-                            if (!SpellManager.HasSpell("Call of the Elements"))
-                                return false;
-
-                            var bestAirTotem = GetAirTotem();
-                            var currentAirTotem = StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == bestAirTotem);
-
-                            if (currentAirTotem == null)
-                            {
-                                return true;
-                            }
-
-                            var airTotemAsUnit = currentAirTotem.Unit;
-
-                            if (airTotemAsUnit == null)
-                            {
-                                return true;
-                            }
-
-                            if (airTotemAsUnit.Distance > GetTotemRange(bestAirTotem))
-                            {
-                                return true;
-                            }
-
-                            var bestEarthTotem = GetEarthTotem();
-                            var currentEarthTotem = StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == bestEarthTotem);
-
-                            if (currentEarthTotem == null)
-                            {
-                                return true;
-                            }
-
-                            var earthTotemAsUnit = currentEarthTotem.Unit;
-
-                            if (earthTotemAsUnit == null)
-                            {
-                                return true;
-                            }
-
-                            if (earthTotemAsUnit.Distance > GetTotemRange(bestEarthTotem))
-                            {
-                                return true;
-                            }
-
-                            var bestWaterTotem = GetWaterTotem();
-                            var currentWaterTotem = StyxWoW.Me.Totems.FirstOrDefault(t => t.WoWTotem == bestWaterTotem);
-
-                            if (currentWaterTotem == null)
-                            {
-                                return true;
-                            }
-
-                            var waterTotemAsUnit = currentWaterTotem.Unit;
-
-                            if (waterTotemAsUnit == null)
-                            {
-                                return true;
-                            }
-
-                            if (waterTotemAsUnit.Distance > GetTotemRange(bestWaterTotem))
-                            {
-                                return true;
-                            }
-
-                            return false;
-                        },
-                    new Sequence(
-                        new Action(ret => SetupTotemBar()),
-                        new Decorator(
-                            ret => (System.DateTime.UtcNow - _lastCallOfElementsAttempt) > CallElementsCooldown,
-                            new Sequence(
-                                new Action(ret => { _lastCallOfElementsAttempt = System.DateTime.UtcNow; return RunStatus.Success; }),
-                                Spell.BuffSelf("Call of the Elements")
-                            )
-                        )))
-                            
+                        ))
                 );
         }
 
-        public static void SetupTotemBar()
-        {
-            // If the user has given specific totems to use, then use them. Otherwise, fall back to our automagical ones
-            WoWTotem earth = SingularSettings.Instance.Shaman.EarthTotem;
-            WoWTotem air = SingularSettings.Instance.Shaman.AirTotem;
-            WoWTotem water = SingularSettings.Instance.Shaman.WaterTotem;
-            WoWTotem fire = SingularSettings.Instance.Shaman.FireTotem;
 
-            SetTotemBarSlot(MultiCastSlot.ElementsEarth, earth != WoWTotem.None ? earth : GetEarthTotem());
-            SetTotemBarSlot(MultiCastSlot.ElementsAir, air != WoWTotem.None ? air : GetAirTotem());
-            SetTotemBarSlot(MultiCastSlot.ElementsWater, water != WoWTotem.None ? water : GetWaterTotem());
-            SetTotemBarSlot(MultiCastSlot.ElementsFire, fire != WoWTotem.None ? fire : GetFireTotem());
-        }
 
         /// <summary>
         /// Returns the best fire totem to use for the current situation.
@@ -268,44 +173,6 @@ namespace Singular.ClassSpecific.Shaman
         /// </remarks>
         /// <param name = "slot">The slot.</param>
         /// <param name = "totem">The totem.</param>
-        public static void SetTotemBarSlot(MultiCastSlot slot, WoWTotem totem)
-        {
-            // Make sure we have the totem bars to set. Highest first kthx
-            if (slot >= MultiCastSlot.SpiritsFire && !SpellManager.HasSpell("Call of the Spirits"))
-            {
-                return;
-            }
-            if (slot >= MultiCastSlot.AncestorsFire && !SpellManager.HasSpell("Call of the Ancestors"))
-            {
-                return;
-            }
-            if (!SpellManager.HasSpell("Call of the Elements"))
-            {
-                return;
-            }
-
-            if (LastSetTotems.ContainsKey(slot) && LastSetTotems[slot] == totem)
-            {
-                return;
-            }
-
-            if (!LastSetTotems.ContainsKey(slot))
-            {
-                LastSetTotems.Add(slot, totem);
-            }
-            else
-            {
-                LastSetTotems[slot] = totem;
-            }
-
-            Logger.Write("Setting totem slot Call of the" + slot.ToString().CamelToSpaced() + " to " + totem.ToString().CamelToSpaced());
-
-            Lua.DoString("SetMultiCastSpell({0}, {1})", (int)slot, totem.GetTotemSpellId());
-        }
-
-        private static System.DateTime _lastCallOfElementsAttempt = System.DateTime.MinValue;
-        private static readonly System.TimeSpan CallElementsCooldown = System.TimeSpan.FromSeconds(6);
-        private static readonly Dictionary<MultiCastSlot, WoWTotem> LastSetTotems = new Dictionary<MultiCastSlot, WoWTotem>();
 
         private static WoWTotem GetEarthTotem()
         {
@@ -524,40 +391,6 @@ namespace Singular.ClassSpecific.Shaman
                     return 30f * talentFactor;
             }
             return 0f;
-        }
-
-        #endregion
-
-        #region Nested type: MultiCastSlot
-
-        /// <summary>
-        ///   A small enum to make specifying specific totem bar slots easier.
-        /// </summary>
-        /// <remarks>
-        ///   Created 3/26/2011.
-        /// </remarks>
-        internal enum MultiCastSlot
-        {
-            // Enums increment by 1 after the first defined value. So don't touch this. Its the way it is for a reason.
-            // If these numbers change in the future, feel free to fill this out completely. I'm too lazy to do it - Apoc
-            //
-            // Note: To get the totem 'slot' just do MultiCastSlot & 3 - will return 0-3 for the totem slot this is for.
-            // I'm not entirely sure how WoW shows which ones are 'current' in the slot, so we'll just set it up for ourselves
-            // and remember which is which.
-            ElementsFire = 133,
-            ElementsEarth,
-            ElementsWater,
-            ElementsAir,
-
-            AncestorsFire,
-            AncestorsEarth,
-            AncestorsWater,
-            AncestorsAir,
-
-            SpiritsFire,
-            SpiritsEarth,
-            SpiritsWater,
-            SpiritsAir
         }
 
         #endregion
