@@ -203,6 +203,10 @@ namespace Singular.ClassSpecific.Druid
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
 
                 // Defensive spells
@@ -234,7 +238,7 @@ namespace Singular.ClassSpecific.Druid
                            StyxWoW.Me.ComboPoints > 1 && StyxWoW.Me.CurrentTarget.HealthPercent < 20),
                 Spell.Cast("Shred", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
 				Spell.Buff("Rake", true, ret => StyxWoW.Me.CurrentTarget),
-                Spell.Cast("Mangle (Cat)"),
+                Spell.Cast("Mangle (Cat)"))),
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
         }
@@ -1195,7 +1199,7 @@ return Action.RAKE;*/
                 //#5 
                 Spell.Cast("Berserk",
                            ret => SingularSettings.Instance.Druid.CatRaidBerserk && !SpellManager.GlobalCooldown &&
-                                  StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth < 25 &&
+                                  (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth < 25 &&
                                   SpellManager.HasSpell("Tiger's Fury") &&
                                   SpellManager.Spells["Tiger's Fury"].CooldownTimeLeft().TotalSeconds > 6),
                 Helpers.Common.CreateAutoAttack(true),
@@ -1253,7 +1257,7 @@ return Action.RAKE;*/
                         //#11
                         Spell.Cast("Rip",
                                    ret => StyxWoW.Me.ComboPoints == 5 &&
-                                          StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 6 &&
+                                          (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 6 &&
                                           SpellManager.HasSpell("Tiger's Fury") &&
                                           (!StyxWoW.Me.CurrentTarget.HasMyAura("Rip") ||
                                            (StyxWoW.Me.CurrentTarget.HasMyAura("Rip") &&
@@ -1273,7 +1277,7 @@ return Action.RAKE;*/
                 //#13
                         Spell.Cast("Rake",
                 // ReSharper disable PossibleLossOfFraction
-                                   ret => StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 8.5 &&
+                                   ret => (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 8.5 &&
                                        // ReSharper restore PossibleLossOfFraction
                                           StyxWoW.Me.ActiveAuras.ContainsKey("Tiger's Fury") &&
                                           (
@@ -1285,7 +1289,7 @@ return Action.RAKE;*/
                 //#14
                         Spell.Cast("Rake",
                 // ReSharper disable PossibleLossOfFraction
-                                   ret => StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 8.5 &&
+                                   ret => (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 8.5 &&
                                        // ReSharper restore PossibleLossOfFraction
                                           (!StyxWoW.Me.CurrentTarget.HasMyAura("Rake") ||
                                            (StyxWoW.Me.CurrentTarget.HasMyAura("Rake") &&
@@ -1309,27 +1313,27 @@ return Action.RAKE;*/
                                    StyxWoW.Me.ActiveAuras.ContainsKey("Clearcasting")
                             ),
                 //#16
-                        Spell.BuffSelf("Savage Roar",
+                        Spell.Buff("Savage Roar", false, ret => StyxWoW.Me,
                                        ret => StyxWoW.Me.ComboPoints > 0 &&
                                               (!StyxWoW.Me.ActiveAuras.ContainsKey("Savage Roar") ||
                                                StyxWoW.Me.GetAuraTimeLeft("Savage Roar", true).TotalSeconds <= 2)
-                            ),
+                            , ""),
                 //#17
                 //#new
-                        Spell.BuffSelf("Savage Roar",
+                        Spell.Buff("Savage Roar", false, ret => StyxWoW.Me,
                                        ret => StyxWoW.Me.ComboPoints == 5 &&
-                                              StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 9 &&
+                                              (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth >= 9 &&
                                               StyxWoW.Me.CurrentTarget.HasMyAura("Rip") &&
                                               StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Rip", true).TotalSeconds <= 12
                                               &&
                                               (StyxWoW.Me.ActiveAuras.ContainsKey("Savage Roar") &&
                                                StyxWoW.Me.GetAuraTimeLeft("Savage Roar", true).TotalSeconds
                                                <= StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Rip", true).TotalSeconds + 6)
-                            ),
+                            , ""),
                 //#18
                         Spell.Cast("Ferocious Bite",
                                    ret => StyxWoW.Me.ComboPoints == 5 &&
-                                          StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 7),
+                                          (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 7),
                 //#19
                         Spell.Cast("Ferocious Bite",
                                    ret => (!StyxWoW.Me.ActiveAuras.ContainsKey("Berserk") ||
@@ -1402,13 +1406,13 @@ return Action.RAKE;*/
                                    ret =>
                                    (StyxWoW.Me.CurrentTarget.MeIsBehind || StyxWoW.Me.CurrentTarget.CanShredBoss()) &&
                                        // ReSharper disable PossibleLossOfFraction
-                                   StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 8.5),
+                                   (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 8.5),
                 // ReSharper restore PossibleLossOfFraction
                         Spell.Cast("Mangle (Cat)",
                                    ret =>
                                    (!StyxWoW.Me.CurrentTarget.MeIsBehind && !StyxWoW.Me.CurrentTarget.CanShredBoss()) &&
                                        // ReSharper disable PossibleLossOfFraction
-                                   StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 8.5),
+                                   (double)StyxWoW.Me.CurrentTarget.CurrentHealth / Finisherhealth <= 8.5),
                 // ReSharper restore PossibleLossOfFraction
                 //#26
                         Spell.Cast("Shred",
