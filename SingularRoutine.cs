@@ -103,8 +103,7 @@ namespace Singular
 
         public override void OnButtonPress()
         {
-            var window = new ConfigurationWindow();
-            window.ShowDialog();
+            ConfigurationWindow.Show();
         }
 
         private ulong _lastTargetGuid = 0;
