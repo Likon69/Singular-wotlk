@@ -54,6 +54,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -89,7 +93,7 @@ namespace Singular.ClassSpecific.Mage
 
                 // These 2 are just for support for some DPS until we get arcane blast.
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
-                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
+                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -112,6 +116,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -145,7 +153,7 @@ namespace Singular.ClassSpecific.Mage
 
                 // These 2 are just for support for some DPS until we get arcane blast.
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
-                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
+                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")))),
 
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
@@ -168,6 +176,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -231,7 +243,7 @@ namespace Singular.ClassSpecific.Mage
 
                 // These 2 are just for support for some DPS until we get arcane blast.
                 Spell.Cast("Arcane Barrage", ret => !SpellManager.HasSpell("Arcane Blast")),
-                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")),
+                Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Arcane Blast")))),
 
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );

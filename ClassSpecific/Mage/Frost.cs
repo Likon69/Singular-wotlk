@@ -60,6 +60,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // We want our pet alive !
                 new Decorator(
@@ -116,7 +120,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.CurrentTarget.HasAura("Frost Nova") ||
                            StyxWoW.Me.IsMoving),
                 Spell.Cast("Frostbolt", ret => !StyxWoW.Me.CurrentTarget.IsImmune(WoWSpellSchool.Frost)),
-                Spell.Cast("Frostfire Bolt"),
+                Spell.Cast("Frostfire Bolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -139,6 +143,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // We want our pet alive !
                 new Decorator(
@@ -180,7 +188,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.CurrentTarget.HasAura("Freeze") ||
                            StyxWoW.Me.CurrentTarget.HasAura("Frost Nova") || 
                            StyxWoW.Me.IsMoving),
-                Spell.Cast("Frostbolt"),
+                Spell.Cast("Frostbolt"))),
 
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
@@ -203,6 +211,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // We want our pet alive !
                 new Decorator(
@@ -266,7 +278,7 @@ namespace Singular.ClassSpecific.Mage
                            StyxWoW.Me.CurrentTarget.HasAura("Frost Nova") ||
                            StyxWoW.Me.IsMoving),
                 Spell.Cast("Frostbolt", ret => !StyxWoW.Me.CurrentTarget.IsImmune(WoWSpellSchool.Frost)),
-                Spell.Cast("Frostfire Bolt"),
+                Spell.Cast("Frostfire Bolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }

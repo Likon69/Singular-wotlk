@@ -53,6 +53,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -98,7 +102,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Scorch", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Improved Scorch", true).TotalSeconds < 1 && SpellManager.HasSpell("Improved Scorch")),
                 Spell.Cast("Pyroblast", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Hot Streak")),
                 Spell.Buff("Living Bomb", true),
-                Spell.Cast("Fireball"),
+                Spell.Cast("Fireball"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -121,6 +125,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -146,7 +154,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Scorch", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Improved Scorch", true).TotalSeconds < 1 && SpellManager.HasSpell("Improved Scorch")),
                 Spell.Cast("Pyroblast", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Hot Streak")),
                 Spell.Buff("Living Bomb", true),
-                Spell.Cast("Fireball"),
+                Spell.Cast("Fireball"))),
 
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
@@ -169,6 +177,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 // Defensive stuff
                 new Decorator(
@@ -207,7 +219,7 @@ namespace Singular.ClassSpecific.Mage
                 Spell.Cast("Scorch", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Improved Scorch", true).TotalSeconds < 1 && SpellManager.HasSpell("Improved Scorch")),
                 Spell.Cast("Pyroblast", ret => StyxWoW.Me.ActiveAuras.ContainsKey("Hot Streak")),
                 Spell.Buff("Living Bomb", true),
-                Spell.Cast("Fireball"),
+                Spell.Cast("Fireball"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }

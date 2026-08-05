@@ -54,6 +54,10 @@ namespace Singular.ClassSpecific.Druid
             Common.WantedDruidForm = ShapeshiftForm.Moonkin;
             return new PrioritySelector(
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 //Heals, will not heal if in a party or if disabled via setting
                 Common.CreateNonRestoHeals(),
 
@@ -107,7 +111,7 @@ namespace Singular.ClassSpecific.Druid
 
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -126,6 +130,10 @@ namespace Singular.ClassSpecific.Druid
             Common.WantedDruidForm = ShapeshiftForm.Moonkin;
             return new PrioritySelector(
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 //Inervate
                 Spell.Buff("Innervate", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Druid.InnervateMana),
@@ -158,7 +166,7 @@ namespace Singular.ClassSpecific.Druid
                 Spell.Cast("Insect Swarm", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Insect Swarm", true).TotalSeconds < 3),
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -177,6 +185,10 @@ namespace Singular.ClassSpecific.Druid
             Common.WantedDruidForm = ShapeshiftForm.Moonkin;
             return new PrioritySelector(
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
 
                 //Inervate
                 Spell.Buff("Innervate",
@@ -233,7 +245,7 @@ namespace Singular.ClassSpecific.Druid
 
                 // And then just spam Wrath/Starfire
                 Spell.Cast("Wrath", ret => BoomkinDpsSpell == "Wrath"),
-                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"),
+                Spell.Cast("Starfire", ret => BoomkinDpsSpell == "Starfire"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }

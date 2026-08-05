@@ -38,6 +38,10 @@ namespace Singular.ClassSpecific.Druid
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 // Make sure we're in cat form first, period.
                 Spell.BuffSelf("Cat Form"),
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
@@ -55,7 +59,7 @@ namespace Singular.ClassSpecific.Druid
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //Pre Cat spells
                 Spell.Buff("Moonfire"),
-                Spell.Cast("Wrath"),
+                Spell.Cast("Wrath"))),
                 Movement.CreateMoveToTargetBehavior(true, 30f)
                 );
         }

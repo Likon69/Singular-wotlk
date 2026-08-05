@@ -28,6 +28,10 @@ namespace Singular.ClassSpecific.Mage
                 Movement.CreateFaceTargetBehavior(),
                 Helpers.Common.CreateAutoAttack(true),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
                 Common.CreateMagePolymorphOnAddBehavior(),
 
@@ -36,7 +40,7 @@ namespace Singular.ClassSpecific.Mage
                 // Note: "Arcane Missiles!" proc aura doesn't exist in WotLK - Arcane Missiles is always castable
                 Spell.Cast("Arcane Missiles"),
                 Spell.Cast("Fireball", ret => !SpellManager.HasSpell("Frostbolt")),
-                Spell.Cast("Frostbolt"),
+                Spell.Cast("Frostbolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 25f)
                 );
         }
