@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Singular.Dynamics;
 using Singular.Helpers;
 using Singular.Managers;
@@ -66,7 +66,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast(
                             "Charge",
                             ret =>
-                            SpellManager.HasSpell("Charge") &&
+                            StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                             StyxWoW.Me.CurrentTarget.Distance.Between(
                                 SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                                 TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -160,11 +160,15 @@ namespace Singular.ClassSpecific.Warrior
             return new PrioritySelector(
                 ctx => TankManager.Instance.FirstUnit ?? StyxWoW.Me.CurrentTarget, //Standard
                 Safers.EnsureTarget(), Movement.CreateMoveToLosBehavior(), Movement.CreateFaceTargetBehavior(),
-                Helpers.Common.CreateAutoAttack(false), //Close cap on target
+                Helpers.Common.CreateAutoAttack(false),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Spell.Cast(
                     "Charge",
                     ret =>
-                    SpellManager.HasSpell("Charge") &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                         TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -173,7 +177,8 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Intercept",
                     ret =>
-                    SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.CurrentTarget.CurrentTarget != null &&
                     !StyxWoW.Me.CurrentTarget.CurrentTarget.IsMe &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Intercept"].ActualMinRange(StyxWoW.Me.CurrentTarget.CurrentTarget),
@@ -181,7 +186,7 @@ namespace Singular.ClassSpecific.Warrior
                 //Interupt or reflect
                 Spell.Cast(
                     "Spell Reflection",
-                    ret => StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
+                    ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget), //PVP
                 new Decorator(
                     ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.IsPlayer,
@@ -207,9 +212,11 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast(
                             "Cleave",
                             ret =>
+                            !SpellManager.IsCurrentSpell("Cleave") &&
                             Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2),
-                        Spell.Cast("Concussion Blow"), Spell.Cast("Shield Slam"), Spell.Cast("Revenge"),
-                        Spell.Cast("Devastate"), Spell.Cast("Heroic Strike", ret => RagePercent >= 50))),
+                        Spell.Cast("Concussion Blow"), Spell.Cast("Shield Slam"),
+                        new Throttle(1, Spell.Cast("Revenge")),
+                        Spell.Cast("Devastate"), Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent >= 50))),
                 //Aoe tanking
                 new Decorator(
                     ret => Targeting.GetAggroOnMeWithin(StyxWoW.Me.Location, 15f) > 1,
@@ -227,6 +234,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast(
                             "Cleave",
                             ret =>
+                            !SpellManager.IsCurrentSpell("Cleave") &&
                             Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2))),
                 //Taunts
                 //If more than 3 enemies need taunting, use group taunt
@@ -243,7 +251,7 @@ namespace Singular.ClassSpecific.Warrior
                     TankManager.Instance.NeedToTaunt.FirstOrDefault() != null),
                 // WotLK Prot priority: Shield Slam > Revenge > Concussion Blow > Shockwave > Victory Rush > Devastate > Sunder Armor
                 Spell.Cast("Shield Slam"),
-                Spell.Cast("Revenge"),
+                new Throttle(1, Spell.Cast("Revenge")),
                 Spell.Cast("Concussion Blow"),
                 Spell.Cast("Shockwave"),
                 Spell.Cast("Victory Rush"),
@@ -256,7 +264,7 @@ namespace Singular.ClassSpecific.Warrior
                     ctx =>
                     StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.DistanceSqr < 7*7 &&
                     StyxWoW.Me.CurrentTarget.Attackable),
-                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
+                Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent >= 60))),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
@@ -319,7 +327,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast(
                             "Charge",
                             ret =>
-                            SpellManager.HasSpell("Charge") &&
+                            StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                             StyxWoW.Me.CurrentTarget.Distance.Between(
                                 SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                                 TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -413,11 +421,15 @@ namespace Singular.ClassSpecific.Warrior
             return new PrioritySelector(
                 ctx => TankManager.Instance.FirstUnit ?? StyxWoW.Me.CurrentTarget, //Standard
                 Safers.EnsureTarget(), Movement.CreateMoveToLosBehavior(), Movement.CreateFaceTargetBehavior(),
-                Helpers.Common.CreateAutoAttack(false), //Close cap on target
+                Helpers.Common.CreateAutoAttack(false),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Spell.Cast(
                     "Charge",
                     ret =>
-                    SpellManager.HasSpell("Charge") &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                         TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -426,7 +438,8 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Intercept",
                     ret =>
-                    SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.CurrentTarget.CurrentTarget != null &&
                     !StyxWoW.Me.CurrentTarget.CurrentTarget.IsMe &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Intercept"].ActualMinRange(StyxWoW.Me.CurrentTarget.CurrentTarget),
@@ -434,7 +447,7 @@ namespace Singular.ClassSpecific.Warrior
                 //Interupt or reflect
                 Spell.Cast(
                     "Spell Reflection",
-                    ret => StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
+                    ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget), Spell.Cast("Victory Rush"),
                 Spell.Cast(
                     "Disarm",
@@ -455,13 +468,14 @@ namespace Singular.ClassSpecific.Warrior
                     !StyxWoW.Me.CurrentTarget.HasAnyAura(_slows)),
                 Spell.Cast(
                     "Cleave",
-                    ret => Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2),
+                    ret => !SpellManager.IsCurrentSpell("Cleave") &&
+                    Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2),
                 Spell.Cast("Shield Slam"),
-                Spell.Cast("Revenge"),
+                new Throttle(1, Spell.Cast("Revenge")),
                 Spell.Cast("Concussion Blow"),
                 Spell.Cast("Devastate"),
                 Spell.Buff("Sunder Armor"),
-                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
+                Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent >= 60))),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
@@ -483,6 +497,10 @@ namespace Singular.ClassSpecific.Warrior
                 Movement.CreateMoveToLosBehavior(), // Auto Attack
                 Helpers.Common.CreateAutoAttack(false), //Dismount
                 new Decorator(ret => StyxWoW.Me.Mounted, Helpers.Common.CreateDismount("Pulling")),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 //Shoot flying targets
                 new Decorator(
                     ret => StyxWoW.Me.CurrentTarget.IsFlying,
@@ -509,7 +527,7 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Charge",
                     ret =>
-                    SpellManager.HasSpell("Charge") &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                         TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -519,7 +537,7 @@ namespace Singular.ClassSpecific.Warrior
                     "Heroic Throw",
                     ret =>
                     !Unit.HasAura(StyxWoW.Me.CurrentTarget, "Charge Stun") &&
-                    SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false), // Move to Melee
+                    SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false))), // Move to Melee
                 Movement.CreateMoveToMeleeBehavior(true));
         }
 
@@ -603,11 +621,15 @@ namespace Singular.ClassSpecific.Warrior
             return new PrioritySelector(
                 ctx => TankManager.Instance.FirstUnit ?? StyxWoW.Me.CurrentTarget, //Standard
                 Safers.EnsureTarget(), Movement.CreateMoveToLosBehavior(), Movement.CreateFaceTargetBehavior(),
-                Helpers.Common.CreateAutoAttack(false), //Close cap on target
+                Helpers.Common.CreateAutoAttack(false),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Spell.Cast(
                     "Charge",
                     ret =>
-                    SpellManager.HasSpell("Charge") &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
                         TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
@@ -616,7 +638,8 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Intercept",
                     ret =>
-                    SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Intercept") && StyxWoW.Me.CurrentTarget.GotTarget &&
+                    StyxWoW.Me.CurrentTarget.CurrentTarget != null &&
                     !StyxWoW.Me.CurrentTarget.CurrentTarget.IsMe &&
                     StyxWoW.Me.CurrentTarget.Distance.Between(
                         SpellManager.Spells["Intercept"].ActualMinRange(StyxWoW.Me.CurrentTarget.CurrentTarget),
@@ -624,7 +647,7 @@ namespace Singular.ClassSpecific.Warrior
                 //Interupt or reflect
                 Spell.Cast(
                     "Spell Reflection",
-                    ret => StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
+                    ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget), //Aoe tanking
                 new Decorator(
                     ret => Targeting.GetAggroOnMeWithin(StyxWoW.Me.Location, 15f) > 1,
@@ -642,6 +665,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast(
                             "Cleave",
                             ret =>
+                            !SpellManager.IsCurrentSpell("Cleave") &&
                             Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 10f) >= 2))),
                 //Taunts
                 //If more than 3 enemies need taunting, use group taunt
@@ -658,7 +682,7 @@ namespace Singular.ClassSpecific.Warrior
                     TankManager.Instance.NeedToTaunt.FirstOrDefault() != null),
                 // WotLK Prot priority: Shield Slam > Revenge > Concussion Blow > Shockwave > Victory Rush > Devastate > Sunder Armor
                 Spell.Cast("Shield Slam"),
-                Spell.Cast("Revenge"),
+                new Throttle(1, Spell.Cast("Revenge")),
                 Spell.Cast("Concussion Blow"),
                 Spell.Cast("Shockwave"),
                 Spell.Cast("Victory Rush"),
@@ -671,7 +695,7 @@ namespace Singular.ClassSpecific.Warrior
                     ctx =>
                     StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.DistanceSqr < 7*7 &&
                     StyxWoW.Me.CurrentTarget.Attackable),
-                Spell.Cast("Heroic Strike", ret => RagePercent >= 60),
+                Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent >= 60))),
                 Movement.CreateMoveToTargetBehavior(true, 4f));
         }
 
