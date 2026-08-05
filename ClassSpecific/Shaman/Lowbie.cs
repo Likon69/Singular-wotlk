@@ -81,9 +81,13 @@ namespace Singular.ClassSpecific.Shaman
                     Movement.CreateFaceTargetBehavior(),
                     Spell.WaitForCast(true),
                     Common.CreateAutoAttack(true),
+                    Spell.WaitForCastOrChannel(),
+                    new Decorator(
+                        ret => !Spell.IsGlobalCooldown(),
+                        new PrioritySelector(
                     Spell.Cast("Earth Shock"),      // always use
                     // Note: Primal Strike doesn't exist in WotLK 3.3.5a (added in Cataclysm)
-                    Spell.Cast("Lightning Bolt"),                   
+                    Spell.Cast("Lightning Bolt"))),
                     Movement.CreateMoveToTargetBehavior(true, 20f)
                     );
         }

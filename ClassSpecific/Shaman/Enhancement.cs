@@ -158,6 +158,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateAutoAttack(true),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
@@ -217,7 +221,7 @@ namespace Singular.ClassSpecific.Shaman
                     ret => StyxWoW.Me.Totems.Any(t => t.WoWTotem == WoWTotem.Searing || t.WoWTotem == WoWTotem.Magma || t.WoWTotem == WoWTotem.Flametongue) &&
                            Unit.NearbyUnfriendlyUnits.Count(u => u.DistanceSqr < 10 * 10 && u.IsTargetingMeOrPet) >= 3),
                 Spell.Cast("Chain Lightning", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5) && Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 2),
-                Spell.Cast("Lightning Bolt", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5)),
+                Spell.Cast("Lightning Bolt", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5)))),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
@@ -239,6 +243,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateAutoAttack(true),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
@@ -267,7 +275,7 @@ namespace Singular.ClassSpecific.Shaman
                 Spell.Cast("Chain Lightning", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5) && Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 2),
                 Spell.Cast("Lightning Bolt", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5)),
                 Spell.Buff("Flame Shock", true),
-                Spell.Cast("Earth Shock", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6),
+                Spell.Cast("Earth Shock", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6))),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
@@ -289,6 +297,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateAutoAttack(true),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
@@ -335,7 +347,7 @@ namespace Singular.ClassSpecific.Shaman
                            StyxWoW.Me.Inventory.Equipped.OffHand.ItemInfo.ItemClass == WoWItemClass.Weapon),
                 Spell.Cast("Lightning Bolt", ret => StyxWoW.Me.HasAura("Maelstrom Weapon", 5)),
                 Spell.Buff("Flame Shock", true),
-                Spell.Cast("Earth Shock", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6),
+                Spell.Cast("Earth Shock", ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6))),
 
                 Movement.CreateMoveToMeleeBehavior(true)
                 );

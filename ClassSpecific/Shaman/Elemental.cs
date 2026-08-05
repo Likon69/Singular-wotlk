@@ -124,6 +124,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
                 Spell.BuffSelf("Lightning Shield"),
@@ -154,7 +158,7 @@ namespace Singular.ClassSpecific.Shaman
                 Spell.Cast("Earth Shock",
                     ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6),
                 Spell.Cast("Chain Lightning", ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 2),
-                Spell.Cast("Lightning Bolt"),
+                Spell.Cast("Lightning Bolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -175,6 +179,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
 
@@ -206,7 +214,7 @@ namespace Singular.ClassSpecific.Shaman
                 Spell.Cast("Earth Shock",
                     ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6),
                 Spell.Cast("Chain Lightning", ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 2),
-                Spell.Cast("Lightning Bolt"),
+                Spell.Cast("Lightning Bolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
@@ -227,6 +235,10 @@ namespace Singular.ClassSpecific.Shaman
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
                 Spell.WaitForCast(true),
+                Spell.WaitForCastOrChannel(),
+                new Decorator(
+                    ret => !Spell.IsGlobalCooldown(),
+                    new PrioritySelector(
                 Totems.CreateSetTotems(),
                 Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
 
@@ -259,7 +271,7 @@ namespace Singular.ClassSpecific.Shaman
                 Spell.Cast("Earth Shock", 
                     ret => StyxWoW.Me.CurrentTarget.GetAuraTimeLeft("Flame Shock", true).TotalSeconds > 6),
                 Spell.Cast("Chain Lightning", ret => Unit.UnfriendlyUnitsNearTarget(10f).Count() >= 2),
-                Spell.Cast("Lightning Bolt"),
+                Spell.Cast("Lightning Bolt"))),
                 Movement.CreateMoveToTargetBehavior(true, 32f)
                 );
         }
