@@ -175,7 +175,7 @@ namespace Singular.ClassSpecific.Warrior
                                !StyxWoW.Me.CurrentTarget.HasMyAura("Rend") ||
                                ((StyxWoW.Me.ActiveAuras.ContainsKey("Overpower") ||
                                  StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood")) &&
-                                SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 &&
+                                SpellManager.HasSpell("Mortal Strike") && SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 &&
                                SingularSettings.Instance.Warrior.UseWarriorKeepStance),
 
                 Spell.Cast("Charge",
@@ -341,7 +341,7 @@ namespace Singular.ClassSpecific.Warrior
                 //Item.UseEquippedItem((uint)WoWInventorySlot.Hands),
 
                 //Keep in Battle Stance
-                Spell.BuffSelf("Battle Stance", ret => !StyxWoW.Me.CurrentTarget.HasMyAura("Rend") || ((StyxWoW.Me.ActiveAuras.ContainsKey("Overpower") || StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood")) && SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
+                Spell.BuffSelf("Battle Stance", ret => !StyxWoW.Me.CurrentTarget.HasMyAura("Rend") || ((StyxWoW.Me.ActiveAuras.ContainsKey("Overpower") || StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood")) && SpellManager.HasSpell("Mortal Strike") && SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
 
                 Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance >= 10 && StyxWoW.Me.CurrentTarget.Distance <= 25 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser && Common.PreventDoubleCharge),
 
@@ -496,7 +496,7 @@ namespace Singular.ClassSpecific.Warrior
                 //Pop over to Zerker
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.CurrentTarget.HasMyAura("Rend") && !StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood") && RagePercent < 75 && StyxWoW.Me.CurrentTarget.IsBoss() && SingularSettings.Instance.Warrior.UseWarriorStanceDance),
                 //Keep in Battle Stance
-                Spell.BuffSelf("Battle Stance", ret => !StyxWoW.Me.CurrentTarget.HasMyAura("Rend") || ((StyxWoW.Me.ActiveAuras.ContainsKey("Overpower") || StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood")) && SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
+                Spell.BuffSelf("Battle Stance", ret => !StyxWoW.Me.CurrentTarget.HasMyAura("Rend") || ((StyxWoW.Me.ActiveAuras.ContainsKey("Overpower") || StyxWoW.Me.ActiveAuras.ContainsKey("Taste for Blood")) && SpellManager.HasSpell("Mortal Strike") && SpellManager.Spells["Mortal Strike"].Cooldown) && RagePercent <= 75 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
 
                 Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance >= 10 && StyxWoW.Me.CurrentTarget.Distance <= 25 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser && Common.PreventDoubleCharge),
 

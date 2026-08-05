@@ -175,7 +175,7 @@ namespace Singular.ClassSpecific.Rogue
 
                 Spell.BuffSelf("Preparation",
                     ret => SpellManager.HasSpell("Vanish") && SpellManager.Spells["Vanish"].CooldownTimeLeft.TotalSeconds > 10 &&
-                           SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
+                           SpellManager.HasSpell("Shadowstep") && SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
                 Spell.BuffSelf("Shadow Dance", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.Cast("Slice and Dice", ret => StyxWoW.Me,
                     ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
@@ -273,7 +273,7 @@ namespace Singular.ClassSpecific.Rogue
 
                 Spell.BuffSelf("Preparation", 
                     ret => SpellManager.HasSpell("Vanish") && SpellManager.Spells["Vanish"].CooldownTimeLeft.TotalSeconds > 10 &&
-                           SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
+                           SpellManager.HasSpell("Shadowstep") && SpellManager.Spells["Shadowstep"].CooldownTimeLeft.TotalSeconds > 10),
                 Spell.BuffSelf("Shadow Dance", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
                 Spell.Cast("Slice and Dice", ret => StyxWoW.Me,
                     ret => StyxWoW.Me.ComboPoints > 0 && StyxWoW.Me.GetAuraTimeLeft("Slice and Dice", true).TotalSeconds < 3),
