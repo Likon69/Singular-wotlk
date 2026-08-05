@@ -47,8 +47,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
                 // Defensive Stuff
                 Spell.Cast(
                     "Intimidation", ret => StyxWoW.Me.CurrentTarget.IsAlive && StyxWoW.Me.GotAlivePet &&
@@ -72,9 +73,9 @@ namespace Singular.ClassSpecific.Hunter
                                    SpellManager.Spells["Kill Command"].CooldownTimeLeft.TotalSeconds < 2)))),
 
                 // WotLK BM Rotation: Kill Command -> Kill Shot -> Explosive Trap -> Serpent Sting -> Multi-Shot -> Arcane Shot -> Steady Shot
-                // WotLK: hunters have 8-yard minimum range on ranged spells — only use Raptor Strike if already at melee
+                // Hunter shots have no minimum range in 3.3.5a (Spell.dbc rangeIndex 114 = min 0)
                 // Raptor Strike fix: explicit cooldown check (6s CD in WotLK)
-                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && !SpellManager.Spells["Raptor Strike"].Cooldown),
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && SpellManager.HasSpell("Raptor Strike") && !SpellManager.Spells["Raptor Strike"].Cooldown),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
@@ -122,8 +123,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
                 // Defensive Stuff
                 Spell.Cast(
                     "Intimidation", ret => StyxWoW.Me.CurrentTarget.IsAlive && StyxWoW.Me.GotAlivePet &&
@@ -149,7 +151,7 @@ namespace Singular.ClassSpecific.Hunter
                 Spell.Buff("Wing Clip"),
                 Spell.Cast("Scatter Shot", ret => StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange + 3f),
                 // Raptor Strike fix: explicit cooldown check (6s CD in WotLK)
-                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && !SpellManager.Spells["Raptor Strike"].Cooldown),
+                Spell.Cast("Raptor Strike", ret => StyxWoW.Me.CurrentTarget.DistanceSqr < 5 * 5 && SpellManager.HasSpell("Raptor Strike") && !SpellManager.Spells["Raptor Strike"].Cooldown),
                 Spell.Cast("Kill Command", ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.Location.Distance(StyxWoW.Me.CurrentTarget.Location) < Spell.MeleeRange),
                 Spell.Cast("Kill Shot"),
                 Common.CreateHunterTrapBehavior("Explosive Trap", false),
@@ -199,8 +201,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
 
                 Spell.Cast("Mend Pet",
                     ret => StyxWoW.Me.GotAlivePet && !StyxWoW.Me.Pet.HasAura("Mend Pet") &&

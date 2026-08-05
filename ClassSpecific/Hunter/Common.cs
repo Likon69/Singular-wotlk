@@ -45,8 +45,8 @@ namespace Singular.ClassSpecific.Hunter
             return new PrioritySelector(
                 Spell.WaitForCast(true),
                 // WotLK QC: Dragonhawk (L74) replaces Hawk  try it first, fall back to Hawk for <74
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
                 Spell.BuffSelf("Track Hidden"),
                 // WotLK MM fix: Trueshot Aura is a MM talent (tier 4) that gives +10% ranged AP to the raid.
                 // HB 4.3.4/5.4.8/6.x never had it because Cata+ made it automatic.

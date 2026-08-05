@@ -57,8 +57,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
                 // Defensive Stuff
                 Spell.Cast(
                     "Intimidation", ret => StyxWoW.Me.CurrentTarget.IsAlive && StyxWoW.Me.GotAlivePet &&
@@ -131,8 +132,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
                 // Defensive Stuff
                 Spell.Cast(
                     "Intimidation", ret => StyxWoW.Me.CurrentTarget.IsAlive && StyxWoW.Me.GotAlivePet &&
@@ -215,8 +217,9 @@ namespace Singular.ClassSpecific.Hunter
                 // Viper aspect for mana management - WotLK specific (5%/80% thresholds from settings)
                 Spell.BuffSelf("Aspect of the Viper", ret => StyxWoW.Me.ManaPercent <= SingularSettings.Instance.Hunter.ViperManaPercent),
                 Spell.BuffSelf("Aspect of the Dragonhawk", ret => StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
-                Spell.BuffSelf("Aspect of the Dragonhawk"),
-                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && StyxWoW.Me.ManaPercent >= SingularSettings.Instance.Hunter.ViperResumeManaPercent && StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Dragonhawk", ret => !StyxWoW.Me.HasAura("Aspect of the Viper")),
+                Spell.BuffSelf("Aspect of the Hawk", ret => !SpellManager.HasSpell("Aspect of the Dragonhawk") && !StyxWoW.Me.HasAura("Aspect of the Viper")),
 
                 Spell.Cast("Mend Pet",
                     ret => StyxWoW.Me.GotAlivePet && !StyxWoW.Me.Pet.HasAura("Mend Pet") &&
