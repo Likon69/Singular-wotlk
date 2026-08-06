@@ -251,6 +251,7 @@ namespace Singular
                     //Item.CreateUseAlchemyBuffsBehavior(),
                         Item.CreateUseTrinketsBehavior(),
                     //Item.CreateUsePotionAndHealthstone(SingularSettings.Instance.PotionHealth, SingularSettings.Instance.PotionMana),
+                        Singular.ClassSpecific.Generic.CreateRacialBehaviour(),
                         _combatBuffsBehavior)
                     );
             }
