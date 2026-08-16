@@ -79,7 +79,7 @@ namespace Singular.Helpers
                         continue;
 
                     // Role API is reliable in raid; for party groups rely on aura/class fallback below.
-                    if (StyxWoW.Me.IsInRaid && m.IsTank)
+                    if (StyxWoW.Me.IsInRaid && m.HasRole(WoWPartyMember.GroupRole.Tank))
                     {
                         result.Add(player);
                         continue;
@@ -116,7 +116,7 @@ namespace Singular.Helpers
                         continue;
 
                     // Role API is reliable in raid; avoid role checks in party to prevent invalid unit-token lookups.
-                    if (StyxWoW.Me.IsInRaid && m.IsHealer)
+                    if (StyxWoW.Me.IsInRaid && m.HasRole(WoWPartyMember.GroupRole.Healer))
                     {
                         result.Add(player);
                         continue;
