@@ -63,15 +63,7 @@ namespace Singular.ClassSpecific.Warrior
                             SingularSettings.Instance.Warrior.UseWarriorShouts &&
                             !StyxWoW.Me.HasAnyAura(
                                 "Horn of Winter", "Strength of Earth Totem", "Battle Shout")), //Charge
-                        Spell.Cast(
-                            "Charge",
-                            ret =>
-                            StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                            StyxWoW.Me.CurrentTarget.Distance.Between(
-                                SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                                TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                                    ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                                    : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                        Common.CreateChargeBehavior(),
                         Spell.Cast(
                             "Heroic Throw",
                             ret =>
@@ -165,15 +157,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(
                     ret => !Spell.IsGlobalCooldown(),
                     new PrioritySelector(
-                Spell.Cast(
-                    "Charge",
-                    ret =>
-                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                    StyxWoW.Me.CurrentTarget.Distance.Between(
-                        SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                        TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                            ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                            : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                Common.CreateChargeBehavior(),
                 Spell.Cast(
                     "Intercept",
                     ret =>
@@ -324,15 +308,7 @@ namespace Singular.ClassSpecific.Warrior
                             SingularSettings.Instance.Warrior.UseWarriorShouts &&
                             !StyxWoW.Me.HasAnyAura(
                                 "Horn of Winter", "Strength of Earth Totem", "Battle Shout")), //Charge
-                        Spell.Cast(
-                            "Charge",
-                            ret =>
-                            StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                            StyxWoW.Me.CurrentTarget.Distance.Between(
-                                SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                                TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                                    ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                                    : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                        Common.CreateChargeBehavior(),
                         Spell.Cast(
                             "Heroic Throw",
                             ret =>
@@ -426,15 +402,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(
                     ret => !Spell.IsGlobalCooldown(),
                     new PrioritySelector(
-                Spell.Cast(
-                    "Charge",
-                    ret =>
-                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                    StyxWoW.Me.CurrentTarget.Distance.Between(
-                        SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                        TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                            ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                            : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                Common.CreateChargeBehavior(),
                 Spell.Cast(
                     "Intercept",
                     ret =>
@@ -524,15 +492,7 @@ namespace Singular.ClassSpecific.Warrior
                     SingularSettings.Instance.Warrior.UseWarriorShouts &&
                     !StyxWoW.Me.HasAnyAura(
                         "Horn of Winter", "Strength of Earth Totem", "Battle Shout")), //Charge
-                Spell.Cast(
-                    "Charge",
-                    ret =>
-                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                    StyxWoW.Me.CurrentTarget.Distance.Between(
-                        SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                        TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                            ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                            : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                Common.CreateChargeBehavior(),
                 Spell.Cast(
                     "Heroic Throw",
                     ret =>
@@ -626,15 +586,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(
                     ret => !Spell.IsGlobalCooldown(),
                     new PrioritySelector(
-                Spell.Cast(
-                    "Charge",
-                    ret =>
-                    StyxWoW.Me.GotTarget && SpellManager.HasSpell("Charge") &&
-                    StyxWoW.Me.CurrentTarget.Distance.Between(
-                        SpellManager.Spells["Charge"].ActualMinRange(StyxWoW.Me.CurrentTarget),
-                        TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */
-                            ? SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget) + 5
-                            : SpellManager.Spells["Charge"].ActualMaxRange(StyxWoW.Me.CurrentTarget))),
+                Common.CreateChargeBehavior(),
                 Spell.Cast(
                     "Intercept",
                     ret =>

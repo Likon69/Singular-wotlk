@@ -16,10 +16,39 @@ namespace Singular.Utilities
     {
         public static void Init()
         {
+            InitializeLocalizedValues();
+
+            LastNoPathFailure = DateTime.MinValue;
+            LastNoPathTarget = 0;
+
             // WotLK 3.3.5a: Re-enabled with direct memory reading in LuaEvents
             if (SingularRoutine.CurrentWoWContext != WoWContext.Battlegrounds &&
                 !StyxWoW.Me.CurrentMap.IsRaid)
                 AttachCombatLogEvent();
+        }
+
+        public static DateTime LastNoPathFailure { get; set; }
+        public static ulong LastNoPathTarget { get; set; }
+
+        private static string LocalizedNoPathAvailableFailure;
+
+        private static void InitializeLocalizedValues()
+        {
+            LocalizedNoPathAvailableFailure = GetSymbolicLocalizeValue("SPELL_FAILED_NOPATH");
+            if (string.IsNullOrEmpty(LocalizedNoPathAvailableFailure))
+                LocalizedNoPathAvailableFailure = "No path available";
+        }
+
+        private static string GetSymbolicLocalizeValue(string symbolicName)
+        {
+            try
+            {
+                return Lua.GetReturnVal<string>("return " + symbolicName, 0);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         internal static void PlayerOnMapChanged(BotEvents.Player.MapChangedEventArgs args)
@@ -57,7 +86,7 @@ namespace Singular.Utilities
             if (
                 !Lua.Events.AddFilter(
                     "COMBAT_LOG_EVENT_UNFILTERED",
-                    "return args[2] == 'SPELL_CAST_SUCCESS' or args[2] == 'SPELL_AURA_APPLIED' or args[2] == 'SPELL_MISSED' or args[2] == 'RANGE_MISSED' or args[2] =='SWING_MISSED'"))
+                    "return args[2] == 'SPELL_CAST_SUCCESS' or args[2] == 'SPELL_CAST_FAILED' or args[2] == 'SPELL_AURA_APPLIED' or args[2] == 'SPELL_MISSED' or args[2] == 'RANGE_MISSED' or args[2] =='SWING_MISSED'"))
             {
                 Logger.Write("ERROR: Could not add combat log event filter! - Performance may be horrible, and things may not work properly!");
             }
@@ -97,6 +126,20 @@ namespace Singular.Utilities
                     if (SingularRoutine.MyClass == WoWClass.Warlock && e.SpellName.StartsWith("Summon "))
                     {
                         StyxWoW.SleepForLagDuration();
+                    }
+                    break;
+
+                case "SPELL_CAST_FAILED":
+                    if (e.SourceGuid != StyxWoW.Me.Guid || e.Args.Length <= 11 || e.Args[11] == null)
+                    {
+                        return;
+                    }
+
+                    if (e.Args[11].ToString() == LocalizedNoPathAvailableFailure)
+                    {
+                        LastNoPathFailure = DateTime.Now;
+                        LastNoPathTarget = StyxWoW.Me.CurrentTargetGuid;
+                        Logger.WriteDebug("Cast failed due to no path available to current target");
                     }
                     break;
 
