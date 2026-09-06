@@ -77,7 +77,7 @@ namespace Singular.ClassSpecific.Warrior
                     ret => StyxWoW.Me.Level < 50,
                     new PrioritySelector(
                         Spell.BuffSelf("Battle Stance"),
-                        Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance > 12 && StyxWoW.Me.CurrentTarget.Distance <= 25),
+                        Common.CreateChargeBehavior(),
                         Spell.Cast("Heroic Throw", ret => !StyxWoW.Me.CurrentTarget.HasAura("Charge Stun")),
                         Movement.CreateMoveToTargetBehavior(true, 5f))),
 
@@ -90,8 +90,7 @@ namespace Singular.ClassSpecific.Warrior
                             ret => SpellManager.HasSpell("Intercept") && SpellManager.Spells["Intercept"].Cooldown && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false))),
 
                 // Get closer to target
-                Spell.Cast("Charge", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */ ? 30f : 25f) &&
-                    SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
+                Common.CreateChargeBehavior(),
                 Spell.Cast("Intercept", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, 25f) &&
                     SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
 
@@ -278,7 +277,7 @@ namespace Singular.ClassSpecific.Warrior
                     ret => StyxWoW.Me.Level < 50,
                     new PrioritySelector(
                         Spell.BuffSelf("Battle Stance"),
-                        Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance > 12 && StyxWoW.Me.CurrentTarget.Distance <= 25),
+                        Common.CreateChargeBehavior(),
                         Spell.Cast("Heroic Throw", ret => !StyxWoW.Me.CurrentTarget.HasAura("Charge Stun")),
                         Movement.CreateMoveToTargetBehavior(true, 5f))),
 
@@ -291,8 +290,7 @@ namespace Singular.ClassSpecific.Warrior
                             ret => SpellManager.HasSpell("Intercept") && SpellManager.Spells["Intercept"].Cooldown && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false))),
 
                 // Get closer to target
-                Spell.Cast("Charge", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */ ? 30f : 25f) &&
-                    SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
+                Common.CreateChargeBehavior(),
                 Spell.Cast("Intercept", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, 25f) &&
                     SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
 
@@ -478,7 +476,7 @@ namespace Singular.ClassSpecific.Warrior
                     ret => StyxWoW.Me.Level < 50,
                     new PrioritySelector(
                         Spell.BuffSelf("Battle Stance"),
-                        Spell.Cast("Charge", ret => StyxWoW.Me.CurrentTarget.Distance > 12 && StyxWoW.Me.CurrentTarget.Distance <= 25),
+                        Common.CreateChargeBehavior(),
                         Spell.Cast("Heroic Throw", ret => !StyxWoW.Me.CurrentTarget.HasAura("Charge Stun")),
                         Movement.CreateMoveToTargetBehavior(true, 5f))),
 
@@ -491,8 +489,7 @@ namespace Singular.ClassSpecific.Warrior
                             ret => SpellManager.HasSpell("Intercept") && SpellManager.Spells["Intercept"].Cooldown && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false))),
 
                 // Get closer to target
-                Spell.Cast("Charge", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, TalentManager.HasGlyph("Charge") /* WotLK QC: "Glyph of Charge" in WotLK, was "Glyph of Long Charge" in Cata */ ? 30f : 25f) &&
-                    SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
+                Common.CreateChargeBehavior(),
                 Spell.Cast("Intercept", ret => PreventDoubleIntercept && StyxWoW.Me.CurrentTarget.Distance.Between(8f, 25f) &&
                     SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false && SingularSettings.Instance.Warrior.UseWarriorCloser),
 
