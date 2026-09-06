@@ -197,6 +197,16 @@ namespace Singular.ClassSpecific.Paladin
                                         p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
                                              !p.HasAura("Blessing of Might") &&
                                              (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
+                                             // WotLK QC: on Auto, fall back to Might while Blessing of Kings is not
+                                             // learned yet (level 20). Singular 4.3.4 could rely on Kings because Cata
+                                             // had merged Might and Wisdom, but WotLK has three blessings, so a paladin
+                                             // between level 4 and 19 was left with no blessing at all on Auto. Same
+                                             // fallback as the Vanilla port (ClassSpecific/Paladin/Common.cs:49-51).
+                                             // The HasSpell guard keeps Kings the Auto choice from 20 on, otherwise the
+                                             // two would replace each other every pulse since one paladin holds a
+                                             // single blessing per target.
+                                             (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
+                                              !SpellManager.HasSpell("Blessing of Kings")) ||
                                              ((p.HasAura("Blessing of Kings") && !p.HasMyAura("Blessing of Kings")) ||
                                                p.HasAura("Mark of the Wild"))));
                                                // WotLK QC: Removed "Embrace of the Shale Spider" (Cata-only)
