@@ -29,6 +29,13 @@ namespace Singular.Settings
         [DisplayName("Mend Pet Percent")]
         public double MendPetPercent { get; set; }
 
+        [Setting]
+        [DefaultValue(true)]
+        [Category("Pet")]
+        [DisplayName("Feed Pet")]
+        [Description("Feed the pet at rest when its happiness drops below Happy")]
+        public bool FeedPet { get; set; }
+
         #endregion
 
         #region Category: Common

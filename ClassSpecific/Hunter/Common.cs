@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using CommonBehaviors.Actions;
 using Singular.Dynamics;
@@ -19,9 +20,34 @@ namespace Singular.ClassSpecific.Hunter
 {
     public class Common
     {
+        private static readonly Stopwatch _feedWatch = new Stopwatch();
+
+        private const string FeedPetScript =
+            "if SpellIsTargeting() then SpellStopTargeting() end " +
+            "ClearCursor() " +
+            "CastSpellByName('Feed Pet') " +
+            "if SpellIsTargeting() then " +
+                "local fed=false " +
+                "for bag=0,4 do " +
+                    "if not fed then " +
+                        "for slot=1,GetContainerNumSlots(bag) do " +
+                            "if not fed and GetContainerItemLink(bag,slot) then " +
+                                "PickupContainerItem(bag,slot) " +
+                                "if not SpellIsTargeting() then " +
+                                    "fed=true " +
+                                "else " +
+                                    "ClearCursor() " +
+                                "end " +
+                            "end " +
+                        "end " +
+                    "end " +
+                "end " +
+                "if not fed then SpellStopTargeting() end " +
+                "ClearCursor() " +
+            "end";
+
         static Common()
         {
-            // Lets hook this event so we can disable growl
             SingularRoutine.OnWoWContextChanged += SingularRoutine_OnWoWContextChanged;
         }
 
@@ -86,6 +112,43 @@ namespace Singular.ClassSpecific.Hunter
             return Spell.BuffSelf("Trueshot Aura",
                 ret => TalentManager.CurrentSpec == TalentSpec.MarksmanshipHunter &&
                        SpellManager.HasSpell("Trueshot Aura"));
+        }
+
+        [Class(WoWClass.Hunter)]
+        [Spec(TalentSpec.BeastMasteryHunter)]
+        [Spec(TalentSpec.SurvivalHunter)]
+        [Spec(TalentSpec.MarksmanshipHunter)]
+        [Behavior(BehaviorType.Rest)]
+        [Context(WoWContext.All)]
+        public static Composite CreateHunterRest()
+        {
+            return new PrioritySelector(
+                new Decorator(
+                    ret => SingularSettings.Instance.Hunter.FeedPet &&
+                           !StyxWoW.Me.Combat &&
+                           StyxWoW.Me.GotAlivePet &&
+                           SpellManager.HasSpell("Feed Pet") &&
+                           StyxWoW.Me.Pet.HappinessPercent < 67 &&
+                           !StyxWoW.Me.Pet.HasAura("Feed Pet") &&
+                           (!_feedWatch.IsRunning || _feedWatch.ElapsedMilliseconds > 30000),
+                    new Sequence(
+                        new Action(ret =>
+                        {
+                            if (StyxWoW.Me.IsMoving)
+                                Navigator.PlayerMover.MoveStop();
+                        }),
+                        new Action(ret =>
+                        {
+                            Utilities.Logger.Write("Feeding pet (happiness {0:F0}%)",
+                                StyxWoW.Me.Pet.HappinessPercent);
+                            Lua.DoString(FeedPetScript);
+                            _feedWatch.Restart();
+                        }),
+                        Helpers.Common.CreateWaitForLagDuration())),
+                Rest.CreateDefaultRestBehaviour(),
+                new Decorator(
+                    ret => StyxWoW.Me.GotAlivePet && StyxWoW.Me.Pet.HasAura("Feed Pet"),
+                    new ActionAlwaysSucceed()));
         }
 
         public static Composite CreateHunterBackPedal()
