@@ -139,8 +139,8 @@ namespace Singular.ClassSpecific.Hunter
                         }),
                         new Action(ret =>
                         {
-                            Utilities.Logger.Write("Feeding pet (happiness {0:F0}%)",
-                                StyxWoW.Me.Pet.HappinessPercent);
+                            // Utilities.Logger.Write("Feeding pet (happiness {0:F0}%)",
+                            //     StyxWoW.Me.Pet.HappinessPercent);
                             Lua.DoString(FeedPetScript);
                             _feedWatch.Restart();
                         }),
