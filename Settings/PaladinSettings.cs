@@ -43,8 +43,15 @@ namespace Singular.Settings
         [DefaultValue(PaladinBlessings.Auto)]
         [Category("Common")]
         [DisplayName("Blessings")]
-        [Description("Which Blessing to cast")]
+        [Description("Which Blessing to cast. Auto picks Sanctuary for Prot, Kings for others.")]
         public PaladinBlessings Blessings { get; set; }
+
+        [Setting]
+        [DefaultValue(false)]
+        [Category("Common")]
+        [DisplayName("Use Greater Blessings")]
+        [Description("Cast Greater Blessing versions (30 min, costs a reagent) instead of regular (10 min).")]
+        public bool UseGreaterBlessings { get; set; }
 
         [Setting]
         [DefaultValue(30)]
@@ -101,6 +108,13 @@ namespace Singular.Settings
         [DisplayName("Consecration Count")]
         [Description("Consecration will be used when you have more then that many mobs attacking you")]
         public int ProtConsecrationCount { get; set; }
+
+        [Setting]
+        [DefaultValue(false)]
+        [Category("Protection")]
+        [DisplayName("Stun Mobs While Solo")]
+        [Description("Use Hammer of Justice on mobs while soloing. Disable if it causes the bot to leave combat early (e.g. while gathering).")]
+        public bool StunMobsWhileSolo { get; set; }
         #endregion
 
         #region Retribution

@@ -40,7 +40,7 @@ namespace Singular.ClassSpecific.Paladin
 
     enum PaladinBlessings
     {
-        Auto, Kings, Might, Wisdom // WotLK: Blessing of Wisdom is separate (merged into Might in Cata 4.0.1)
+        Auto, Kings, Might, Wisdom, Sanctuary // WotLK: Wisdom separate (merged into Might in Cata), Sanctuary is Prot talent
     }
 
     public class Common
@@ -124,92 +124,87 @@ namespace Singular.ClassSpecific.Paladin
                     )));
         }
 
+        private static bool HasAnyBlessing(WoWPlayer p, string type)
+        {
+            return p.HasAura("Blessing of " + type) || p.HasAura("Greater Blessing of " + type);
+        }
+
+        private static List<WoWPlayer> GetBlessTargets()
+        {
+            var players = new List<WoWPlayer>();
+            if (StyxWoW.Me.IsInRaid)
+                players.AddRange(StyxWoW.Me.RaidMembers);
+            else if (StyxWoW.Me.IsInParty)
+                players.AddRange(StyxWoW.Me.PartyMembers);
+            players.Add(StyxWoW.Me);
+            return players;
+        }
+
         private static Composite CreatePaladinBlessBehavior()
         {
-            // WotLK QC: wrap each Blessing cast in a Throttle(2s) so we don't re-attempt the cast
-            // every pulse while the buff is missing/being-applied. Without this, the priority
-            // selector re-evaluates and re-issues CastSpell multiple times per second (e.g. when
-            // moving, drinking, or the buff hasn't propagated yet), draining mana and spamming
-            // "Casting Blessing of Might on Myself" in the log. Matches Singular 5.4.8's
-            // spanBuffFrequency (20s) throttling behavior, scaled down to 2s since the WotLK
-            // routine has no group-wide IsItTimeToBuff() guard.
+            bool useGreater = SingularSettings.Instance.Paladin.UseGreaterBlessings;
+            string sanctuarySpell = useGreater ? "Greater Blessing of Sanctuary" : "Blessing of Sanctuary";
+            string wisdomSpell = useGreater ? "Greater Blessing of Wisdom" : "Blessing of Wisdom";
+            string kingsSpell = useGreater ? "Greater Blessing of Kings" : "Blessing of Kings";
+            string mightSpell = useGreater ? "Greater Blessing of Might" : "Blessing of Might";
+
             return
                 new PrioritySelector(
-                    // WotLK: Blessing of Wisdom — separate from Might in WotLK (merged in Cata 4.0.1)
-                    new Throttle(2, Spell.Cast("Blessing of Wisdom",
+                    new Throttle(2, Spell.Cast(sanctuarySpell,
+                        ret => StyxWoW.Me,
+                        ret =>
+                        {
+                            if (SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Sanctuary &&
+                                !(SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
+                                  TalentManager.CurrentSpec == TalentSpec.ProtectionPaladin))
+                                return false;
+                            return GetBlessTargets().Any(
+                                p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
+                                     !HasAnyBlessing(p, "Sanctuary"));
+                        })),
+                    new Throttle(2, Spell.Cast(wisdomSpell,
                         ret => StyxWoW.Me,
                         ret =>
                         {
                             if (SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Wisdom)
                                 return false;
-                            var players = new List<WoWPlayer>();
-
-                            if (StyxWoW.Me.IsInRaid)
-                                players.AddRange(StyxWoW.Me.RaidMembers);
-                            else if (StyxWoW.Me.IsInParty)
-                                players.AddRange(StyxWoW.Me.PartyMembers);
-
-                            players.Add(StyxWoW.Me);
-
-                            return players.Any(
-                                        p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                             !p.HasAura("Blessing of Wisdom"));
+                            return GetBlessTargets().Any(
+                                p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
+                                     !HasAnyBlessing(p, "Wisdom"));
                         })),
-                    new Throttle(2, Spell.Cast("Blessing of Kings",
+                    new Throttle(2, Spell.Cast(kingsSpell,
                         ret => StyxWoW.Me,
                         ret =>
                         {
                             if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
-                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)
+                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom ||
+                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Sanctuary)
                                 return false;
-                            var players = new List<WoWPlayer>();
-
-                            if (StyxWoW.Me.IsInRaid)
-                                players.AddRange(StyxWoW.Me.RaidMembers);
-                            else if (StyxWoW.Me.IsInParty)
-                                players.AddRange(StyxWoW.Me.PartyMembers);
-
-                            players.Add(StyxWoW.Me);
-
-                            return players.Any(
-                                        p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                             !p.HasAura("Blessing of Kings") &&
-                                             !p.HasAura("Mark of the Wild")
-                                             // WotLK QC: Removed "Embrace of the Shale Spider" (Cata-only Shale Spider exotic pet buff)
-                                             );
+                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
+                                TalentManager.CurrentSpec == TalentSpec.ProtectionPaladin &&
+                                SpellManager.HasSpell("Blessing of Sanctuary"))
+                                return false;
+                            return GetBlessTargets().Any(
+                                p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
+                                     !HasAnyBlessing(p, "Kings") &&
+                                     !p.HasAura("Mark of the Wild"));
                         })),
-                    new Throttle(2, Spell.Cast("Blessing of Might",
+                    new Throttle(2, Spell.Cast(mightSpell,
                         ret => StyxWoW.Me,
                         ret =>
                         {
-                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)
+                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom ||
+                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Sanctuary)
                                 return false;
-                            var players = new List<WoWPlayer>();
-
-                            if (StyxWoW.Me.IsInRaid)
-                                players.AddRange(StyxWoW.Me.RaidMembers);
-                            else if (StyxWoW.Me.IsInParty)
-                                players.AddRange(StyxWoW.Me.PartyMembers);
-
-                            players.Add(StyxWoW.Me);
-
-                            return players.Any(
-                                        p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                             !p.HasAura("Blessing of Might") &&
-                                             (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
-                                             // WotLK QC: on Auto, fall back to Might while Blessing of Kings is not
-                                             // learned yet (level 20). Singular 4.3.4 could rely on Kings because Cata
-                                             // had merged Might and Wisdom, but WotLK has three blessings, so a paladin
-                                             // between level 4 and 19 was left with no blessing at all on Auto. Same
-                                             // fallback as the Vanilla port (ClassSpecific/Paladin/Common.cs:49-51).
-                                             // The HasSpell guard keeps Kings the Auto choice from 20 on, otherwise the
-                                             // two would replace each other every pulse since one paladin holds a
-                                             // single blessing per target.
-                                             (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
-                                              !SpellManager.HasSpell("Blessing of Kings")) ||
-                                             ((p.HasAura("Blessing of Kings") && !p.HasMyAura("Blessing of Kings")) ||
-                                               p.HasAura("Mark of the Wild"))));
-                                               // WotLK QC: Removed "Embrace of the Shale Spider" (Cata-only)
+                            return GetBlessTargets().Any(
+                                p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
+                                     !HasAnyBlessing(p, "Might") &&
+                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
+                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
+                                      !SpellManager.HasSpell("Blessing of Kings") &&
+                                      !SpellManager.HasSpell("Blessing of Sanctuary")) ||
+                                     ((HasAnyBlessing(p, "Kings") && !p.HasMyAura("Blessing of Kings") && !p.HasMyAura("Greater Blessing of Kings")) ||
+                                       p.HasAura("Mark of the Wild"))));
                         }))
                     );
         }

@@ -16,14 +16,30 @@ namespace Singular.ClassSpecific.Paladin
     {
         [Class(WoWClass.Paladin)]
         [Spec(TalentSpec.ProtectionPaladin)]
+        [Behavior(BehaviorType.Heal)]
+        [Context(WoWContext.All)]
+        public static Composite CreateProtectionPaladinHeal()
+        {
+            return new PrioritySelector(
+                Spell.Cast("Lay on Hands", ret => StyxWoW.Me,
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.LayOnHandsHealth &&
+                                  !StyxWoW.Me.HasAura("Forbearance")),
+                Spell.Heal("Holy Light", ret => StyxWoW.Me,
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.HolyLightHealth),
+                Spell.Heal("Flash of Light", ret => StyxWoW.Me,
+                           ret => StyxWoW.Me.HealthPercent <= SingularSettings.Instance.Paladin.FlashOfLightHealth));
+        }
+
+        [Class(WoWClass.Paladin)]
+        [Spec(TalentSpec.ProtectionPaladin)]
         [Behavior(BehaviorType.Rest)]
         [Context(WoWContext.All)]
         public static Composite CreateProtectionPaladinRest()
         {
             return new PrioritySelector(
-                // Rest up damnit! Do this first, so we make sure we're fully rested.
+                new Decorator(ret => !StyxWoW.Me.HasAura("Drink") && !StyxWoW.Me.HasAura("Food"),
+                    CreateProtectionPaladinHeal()),
                 Rest.CreateDefaultRestBehaviour(),
-                // Can we res people?
                 Spell.Resurrect("Redemption"));
         }
 
@@ -75,7 +91,7 @@ namespace Singular.ClassSpecific.Paladin
                     new PrioritySelector(
 			Spell.Cast("Divine Plea", ret => StyxWoW.Me.ManaPercent < 75),
                         Spell.Cast("Hammer of the Righteous"),
-                        Spell.Cast("Hammer of Justice", ctx => !StyxWoW.Me.IsInParty),
+                        Spell.Cast("Hammer of Justice", ctx => SingularSettings.Instance.Paladin.StunMobsWhileSolo && !StyxWoW.Me.IsInParty),
                         Spell.Cast("Consecration", ret => Unit.NearbyUnfriendlyUnits.Count(u => u.Distance <= 8) >= SingularSettings.Instance.Paladin.ProtConsecrationCount 
                             || StyxWoW.Me.CurrentTarget?.IsBoss() == true),
                         Spell.Cast("Holy Wrath"),
@@ -87,7 +103,7 @@ namespace Singular.ClassSpecific.Paladin
                 //Single target
 		Spell.Cast("Divine Plea", ret => StyxWoW.Me.ManaPercent < 75),
                 Spell.Cast("Shield of Righteousness"), // WotLK: Crusader Strike is Ret-only, Shield of Righteousness is the Prot filler (L75, 6s CD)
-                Spell.Cast("Hammer of Justice"),
+                Spell.Cast("Hammer of Justice", ret => SingularSettings.Instance.Paladin.StunMobsWhileSolo && !StyxWoW.Me.IsInParty),
                 Spell.Cast("Judgement of Wisdom"),
                 Spell.Cast("Hammer of Wrath", ret => ((WoWUnit)ret).HealthPercent <= 20),
                 Spell.Cast("Avenger's Shield", ret => !SingularSettings.Instance.Paladin.AvengersPullOnly),
