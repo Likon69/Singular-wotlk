@@ -175,7 +175,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(
                     ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.IsPlayer,
                     new PrioritySelector(
-                        Spell.Cast("Victory Rush"),
+                        Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast(
                             "Disarm",
                             ctx =>
@@ -238,7 +238,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Throttle(1, Spell.Cast("Revenge")),
                 Spell.Cast("Concussion Blow"),
                 Spell.Cast("Shockwave"),
-                Spell.Cast("Victory Rush"),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                 Spell.Cast("Devastate"),
                 Spell.Buff("Sunder Armor"),
                 Spell.Buff("Rend"),
@@ -416,7 +416,7 @@ namespace Singular.ClassSpecific.Warrior
                 Spell.Cast(
                     "Spell Reflection",
                     ret => StyxWoW.Me.GotTarget && StyxWoW.Me.CurrentTarget.CurrentTarget == StyxWoW.Me && StyxWoW.Me.CurrentTarget.IsCasting),
-                Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget), Spell.Cast("Victory Rush"),
+                Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget), Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                 Spell.Cast(
                     "Disarm",
                     ctx =>
@@ -637,7 +637,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Throttle(1, Spell.Cast("Revenge")),
                 Spell.Cast("Concussion Blow"),
                 Spell.Cast("Shockwave"),
-                Spell.Cast("Victory Rush"),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                 Spell.Cast("Devastate"),
                 Spell.Buff("Sunder Armor"),
                 Spell.Buff("Rend"),

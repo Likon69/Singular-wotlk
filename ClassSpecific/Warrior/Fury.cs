@@ -147,7 +147,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(ret => StyxWoW.Me.Level < 30,
                     new PrioritySelector(
                         Movement.CreateMoveBehindTargetBehavior(),
-                        Spell.Cast("Victory Rush"),
+                        Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast("Execute"),
                         Spell.Buff("Rend"),
                         Spell.Cast("Overpower"),
@@ -185,7 +185,7 @@ namespace Singular.ClassSpecific.Warrior
 
                 Movement.CreateMoveBehindTargetBehavior(),
                 //Heal up in melee
-                Spell.Cast("Victory Rush", ret => SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious") && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 Spell.Cast("Heroic Throw", ret => StyxWoW.Me.CurrentTarget.Distance > 15 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
                 // engineering gloves
@@ -347,7 +347,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(ret => StyxWoW.Me.Level < 30,
                     new PrioritySelector(
                         Movement.CreateMoveBehindTargetBehavior(),
-                        Spell.Cast("Victory Rush"),
+                        Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast("Execute"),
                         Spell.Buff("Rend"),
                         Spell.Cast("Overpower"),
@@ -385,7 +385,7 @@ namespace Singular.ClassSpecific.Warrior
 
                 Movement.CreateMoveBehindTargetBehavior(),
                 //Heal up in melee
-                Spell.Cast("Victory Rush", ret => SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious") && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 Spell.Cast("Heroic Throw", ret => StyxWoW.Me.CurrentTarget.Distance > 15 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
                 // engineering gloves
@@ -546,7 +546,7 @@ namespace Singular.ClassSpecific.Warrior
                 new Decorator(ret => StyxWoW.Me.Level < 30,
                     new PrioritySelector(
                         Movement.CreateMoveBehindTargetBehavior(),
-                        Spell.Cast("Victory Rush"),
+                        Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast("Execute"),
                         Spell.Buff("Rend"),
                         Spell.Cast("Overpower"),
@@ -584,7 +584,7 @@ namespace Singular.ClassSpecific.Warrior
 
                 Movement.CreateMoveBehindTargetBehavior(),
                 //Heal up in mele
-                Spell.Cast("Victory Rush", ret =>  SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious") && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
                 Spell.Cast("Heroic Throw", ret => StyxWoW.Me.CurrentTarget.Distance > 15 && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
                 // engineering gloves

@@ -44,14 +44,14 @@ namespace Singular.ClassSpecific.Warrior
                 // Party/self attack power buff (avoid overwriting other class buffs)
                 Spell.BuffSelf("Battle Shout", ret => !StyxWoW.Me.HasAnyAura("Horn of Winter", "Roar of Courage", "Strength of Earth Totem", "Battle Shout")),
                 // Heal
-                Spell.Cast("Victory Rush"),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                 //rend
                 Spell.Buff("Rend"),
                 // AOE
                 new Decorator(
                     ret => Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) >= 2,
                     new PrioritySelector(
-                        Spell.Cast("Victory Rush"),
+                        Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast("Thunder Clap"),
                         Spell.Cast("Heroic Strike"))),
                 // DPS

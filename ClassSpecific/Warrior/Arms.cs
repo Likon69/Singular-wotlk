@@ -191,8 +191,7 @@ namespace Singular.ClassSpecific.Warrior
                            SingularSettings.Instance.Warrior.UseWarriorSlows &&
                            SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
-                //freebie dps - use it if it's available
-                Spell.Cast("Victory Rush"),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
 
                 // AOE
                 new Decorator(
@@ -345,8 +344,7 @@ namespace Singular.ClassSpecific.Warrior
                 // Melee slow
                 Spell.Cast("Hamstring", ret => StyxWoW.Me.CurrentTarget.IsPlayer && !StyxWoW.Me.CurrentTarget.HasAnyAura(_slows) && SingularSettings.Instance.Warrior.UseWarriorSlows && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
-                //Melee Heal
-                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HealthPercent < 80),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HealthPercent < 80 && StyxWoW.Me.HasAura("Victorious")),
 
                 // AOE
                 new Decorator(ret => Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) >= 3 && SingularSettings.Instance.Warrior.UseWarriorAOE,
@@ -498,8 +496,7 @@ namespace Singular.ClassSpecific.Warrior
                 // Melee slow
                 Spell.Cast("Hamstring", ret => StyxWoW.Me.CurrentTarget.IsPlayer && !StyxWoW.Me.CurrentTarget.HasAnyAura(_slows) && SingularSettings.Instance.Warrior.UseWarriorSlows && SingularSettings.Instance.Warrior.UseWarriorBasicRotation == false),
 
-             //freebie dps - use it if it's available
-                Spell.Cast("Victory Rush"),
+                Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
 
                 // AOE
                 new Decorator(ret => Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) >= 3 && SingularSettings.Instance.Warrior.UseWarriorAOE,
