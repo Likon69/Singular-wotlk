@@ -178,11 +178,11 @@ namespace Singular.ClassSpecific.Paladin
                         ret => StyxWoW.Me,
                         ret => SingularSettings.Instance.Paladin.UseGreaterBlessings &&
                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom")))),
+                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")))),
                     new Throttle(2, Spell.Cast("Blessing of Wisdom",
                         ret => StyxWoW.Me,
                         ret => SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom")))),
+                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")))),
                     // Kings — Greater then regular fallback
                     new Throttle(2, Spell.Cast("Greater Blessing of Kings",
                         ret => StyxWoW.Me,
