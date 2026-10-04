@@ -160,73 +160,61 @@ namespace Singular.ClassSpecific.Paladin
             return true;
         }
 
+        private static WoWPlayer FindBlessTarget(System.Func<WoWPlayer, bool> needsBlessing)
+        {
+            return GetBlessTargets().FirstOrDefault(p => p.DistanceSqr < 30 * 30 && p.IsAlive && p.InLineOfSpellSight && needsBlessing(p));
+        }
+
+        private static bool CanBlessMight()
+        {
+            return SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Wisdom &&
+                   SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Sanctuary &&
+                   !(WantSanctuary() && SpellManager.HasSpell("Blessing of Sanctuary"));
+        }
+
+        private static bool NeedsMight(WoWPlayer p)
+        {
+            return !HasAnyBlessing(p, "Might") && !p.HasAura("Battle Shout") &&
+                   (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
+                    (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
+                     !SpellManager.HasSpell("Blessing of Kings") &&
+                     !SpellManager.HasSpell("Blessing of Sanctuary")) ||
+                    (HasAnyBlessing(p, "Kings") && !p.HasMyAura("Blessing of Kings") && !p.HasMyAura("Greater Blessing of Kings")));
+        }
+
         private static Composite CreatePaladinBlessBehavior()
         {
             return
                 new PrioritySelector(
                     // Sanctuary — Greater then regular fallback
                     new Throttle(2, Spell.Cast("Greater Blessing of Sanctuary",
-                        ret => StyxWoW.Me,
-                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings && WantSanctuary() &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Sanctuary")))),
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Sanctuary")),
+                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings && WantSanctuary())),
                     new Throttle(2, Spell.Cast("Blessing of Sanctuary",
-                        ret => StyxWoW.Me,
-                        ret => WantSanctuary() &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Sanctuary")))),
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Sanctuary")),
+                        ret => WantSanctuary())),
                     // Wisdom — Greater then regular fallback
                     new Throttle(2, Spell.Cast("Greater Blessing of Wisdom",
-                        ret => StyxWoW.Me,
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")),
                         ret => SingularSettings.Instance.Paladin.UseGreaterBlessings &&
-                               SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")))),
+                               SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)),
                     new Throttle(2, Spell.Cast("Blessing of Wisdom",
-                        ret => StyxWoW.Me,
-                        ret => SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive && !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")))),
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Wisdom") && !p.HasAura("Mana Spring")),
+                        ret => SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom)),
                     // Kings — Greater then regular fallback
                     new Throttle(2, Spell.Cast("Greater Blessing of Kings",
-                        ret => StyxWoW.Me,
-                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings && WantKings() &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                    !HasAnyBlessing(p, "Kings") && !p.HasAura("Mark of the Wild")))),
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Kings")),
+                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings && WantKings())),
                     new Throttle(2, Spell.Cast("Blessing of Kings",
-                        ret => StyxWoW.Me,
-                        ret => WantKings() &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                    !HasAnyBlessing(p, "Kings") && !p.HasAura("Mark of the Wild")))),
+                        ret => FindBlessTarget(p => !HasAnyBlessing(p, "Kings")),
+                        ret => WantKings())),
                     // Might — Greater then regular fallback
                     new Throttle(2, Spell.Cast("Greater Blessing of Might",
-                        ret => StyxWoW.Me,
-                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings &&
-                               SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Wisdom &&
-                               SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Sanctuary &&
-                               !(WantSanctuary() && SpellManager.HasSpell("Blessing of Sanctuary")) &&
-                               GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                    !HasAnyBlessing(p, "Might") &&
-                                    (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
-                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
-                                      !SpellManager.HasSpell("Blessing of Kings") &&
-                                      !SpellManager.HasSpell("Blessing of Sanctuary")) ||
-                                     ((HasAnyBlessing(p, "Kings") && !p.HasMyAura("Blessing of Kings") && !p.HasMyAura("Greater Blessing of Kings")) ||
-                                       p.HasAura("Mark of the Wild")))))),
+                        ret => FindBlessTarget(NeedsMight),
+                        ret => SingularSettings.Instance.Paladin.UseGreaterBlessings && CanBlessMight())),
                     new Throttle(2, Spell.Cast("Blessing of Might",
-                        ret => StyxWoW.Me,
-                        ret =>
-                        {
-                            if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom ||
-                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Sanctuary ||
-                                (WantSanctuary() && SpellManager.HasSpell("Blessing of Sanctuary")))
-                                return false;
-                            return GetBlessTargets().Any(
-                                p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
-                                     !HasAnyBlessing(p, "Might") &&
-                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
-                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Auto &&
-                                      !SpellManager.HasSpell("Blessing of Kings") &&
-                                      !SpellManager.HasSpell("Blessing of Sanctuary")) ||
-                                     ((HasAnyBlessing(p, "Kings") && !p.HasMyAura("Blessing of Kings") && !p.HasMyAura("Greater Blessing of Kings")) ||
-                                       p.HasAura("Mark of the Wild"))));
-                        }))
+                        ret => FindBlessTarget(NeedsMight),
+                        ret => CanBlessMight()))
                     );
         }
     }
