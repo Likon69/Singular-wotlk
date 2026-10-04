@@ -200,6 +200,7 @@ namespace Singular.ClassSpecific.Paladin
                         ret => SingularSettings.Instance.Paladin.UseGreaterBlessings &&
                                SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Wisdom &&
                                SingularSettings.Instance.Paladin.Blessings != PaladinBlessings.Sanctuary &&
+                               !(WantSanctuary() && SpellManager.HasSpell("Blessing of Sanctuary")) &&
                                GetBlessTargets().Any(p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
                                     !HasAnyBlessing(p, "Might") &&
                                     (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Might ||
@@ -213,7 +214,8 @@ namespace Singular.ClassSpecific.Paladin
                         ret =>
                         {
                             if (SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Wisdom ||
-                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Sanctuary)
+                                SingularSettings.Instance.Paladin.Blessings == PaladinBlessings.Sanctuary ||
+                                (WantSanctuary() && SpellManager.HasSpell("Blessing of Sanctuary")))
                                 return false;
                             return GetBlessTargets().Any(
                                 p => p.DistanceSqr < 40 * 40 && p.IsAlive &&
