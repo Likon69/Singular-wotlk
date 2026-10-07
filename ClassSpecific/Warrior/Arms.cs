@@ -1,4 +1,4 @@
-using Singular.Dynamics;
+﻿using Singular.Dynamics;
 using Singular.Helpers;
 using Singular.Managers;
 using Singular.Settings;
@@ -210,7 +210,7 @@ namespace Singular.ClassSpecific.Warrior
                 // WotLK: Blood and Thunder doesn't exist (Cata 4.0.1+), Rend doesn't spread via TC — cast Rend normally
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")),
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -356,7 +356,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Bladestorm", ret => SingularSettings.Instance.Warrior.UseWarriorBladestorm),
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")), // Blood and Thunder = Cata 4.0.1+, position (3,3) WotLK = Trauma
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -508,7 +508,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Bladestorm", ret => SingularSettings.Instance.Warrior.UseWarriorBladestorm),
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")), // Blood and Thunder = Cata 4.0.1+, position (3,3) WotLK = Trauma
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -560,7 +560,12 @@ namespace Singular.ClassSpecific.Warrior
         static bool CanUseRageDump()
         {
             // Check if we have 60 rage to use cleave.
-            return RagePercent > 60;
+            return OnNextSwingReady() && RagePercent > 60;
+        }
+
+        static bool OnNextSwingReady()
+        {
+            return !SpellManager.IsCurrentSpell("Heroic Strike") && !SpellManager.IsCurrentSpell("Cleave");
         }
         #endregion
     }

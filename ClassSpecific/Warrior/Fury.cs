@@ -1,4 +1,4 @@
-
+﻿
 
 using Singular.Dynamics;
 using Singular.Helpers;
@@ -154,7 +154,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => OnNextSwingReady() && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -197,7 +197,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -354,7 +354,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => OnNextSwingReady() && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -397,7 +397,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -553,7 +553,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => OnNextSwingReady() && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -596,7 +596,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => OnNextSwingReady()),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -640,7 +640,12 @@ namespace Singular.ClassSpecific.Warrior
         static bool CanUseRageDump()
         {
             // Use Heroic Strike / Cleave at >= 40 rage to avoid overcapping (WotLK Fury: >40 rage per icy-veins)
-            return StyxWoW.Me.CurrentRage >= 40;
+            return OnNextSwingReady() && StyxWoW.Me.CurrentRage >= 40;
+        }
+
+        static bool OnNextSwingReady()
+        {
+            return !SpellManager.IsCurrentSpell("Heroic Strike") && !SpellManager.IsCurrentSpell("Cleave");
         }
 
         static bool HasSpellIntercept()

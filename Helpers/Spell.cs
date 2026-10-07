@@ -267,11 +267,14 @@ namespace Singular.Helpers
                     var inRange = false;
                     if (minReqs)
                     {
-                        canCast = SpellManager.CanCast(name, onUnit(ret), false, checkMovement(ret));
+                        var target = onUnit(ret);
+                        if (target == null)
+                            return false;
+
+                        canCast = SpellManager.CanCast(name, target, false, checkMovement(ret));
 
                         if (canCast)
                         {
-                            var target = onUnit(ret);
                             // We're always in range of ourselves. So just ignore this bit if we're casting it on us
                             if (target.IsMe)
                             {
@@ -318,8 +321,12 @@ namespace Singular.Helpers
                     new Action(
                         ret =>
                         {
-                            Logger.Write("Casting " + name + " on " + onUnit(ret).SafeName());
-                            SpellManager.Cast(name, onUnit(ret));
+                            var target = onUnit(ret);
+                            if (target == null)
+                                return;
+
+                            Logger.Write("Casting " + name + " on " + target.SafeName());
+                            SpellManager.Cast(name, target);
 
                             //WoWSpell spell;
                             //if (SpellManager.Spells.TryGetValue(name, out spell))
@@ -417,8 +424,13 @@ namespace Singular.Helpers
                     new Action(
                         ret =>
                         {
-                            Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
-                            SpellManager.Cast(spellId, onUnit(ret));
+
+                            var target = onUnit(ret);
+                            if (target == null)
+                                return;
+
+                            Logger.Write("Casting " + spellId + " on " + target.SafeName());
+                            SpellManager.Cast(spellId, target);
                         }))
                 );
         }
