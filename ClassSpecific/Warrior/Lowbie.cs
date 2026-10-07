@@ -14,6 +14,11 @@ namespace Singular.ClassSpecific.Warrior
     {
         // WotLK compatibility: RagePercent property doesn't exist, so calculate it manually
         private static double RagePercent { get { return (StyxWoW.Me.CurrentRage / (double)StyxWoW.Me.MaxRage) * 100; } }
+	    // Fix to the skill spam.
+        static bool OnNextSwingReady()
+        {
+            return !SpellManager.IsCurrentSpell("Heroic Strike") && !SpellManager.IsCurrentSpell("Cleave");
+        }
 
         [Spec(TalentSpec.Lowbie)]
         [Behavior(BehaviorType.Combat)]
@@ -53,10 +58,9 @@ namespace Singular.ClassSpecific.Warrior
                     new PrioritySelector(
                         Spell.Cast("Victory Rush", ret => StyxWoW.Me.HasAura("Victorious")),
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Heroic Strike"))),
-                // DPS
-                Spell.Cast("Heroic Strike"),
-                Spell.Cast("Thunder Clap", ret => RagePercent > 50),
+                        Spell.Cast("Heroic Strike", ret => OnNextSwingReady()))),
+						Spell.Cast("Heroic Strike", ret => OnNextSwingReady() && RagePercent > 30),
+						Spell.Cast("Thunder Clap", ret => RagePercent > 50),
                 // Fallback move to melee
                 Movement.CreateMoveToMeleeBehavior(true)
                 );

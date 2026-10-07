@@ -38,6 +38,11 @@ namespace Singular
 
         public static string SafeName(this WoWObject obj)
         {
+            if (obj == null)
+            {
+                return "(null)";
+            }
+
             if (obj.IsMe)
             {
                 return "Myself";
