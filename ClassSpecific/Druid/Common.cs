@@ -53,7 +53,7 @@ namespace Singular.ClassSpecific.Druid
             return new PrioritySelector( 
                 Spell.Cast(
                     "Mark of the Wild",
-                    ret => StyxWoW.Me,
+                    ret => FindMotwTarget(),
                     // WotLK QC: Removed "Embrace of the Shale Spider" (Cata-only Shale Spider exotic pet buff)
                     // WotLK QC: Added "Gift of the Wild" — WotLK spell (id 21849) from Improved Mark of
                     // the Wild talent or paladin Greater Blessing of Kings equivalent. Without it the
@@ -61,15 +61,10 @@ namespace Singular.ClassSpecific.Druid
                     // Wild active (the upgraded buff) instead of base Mark of the Wild. Matches the
                     // HB 4.3.4 / Singular 4.3.4 HasAnyAura pattern of listing every buff that should
                     // suppress the cast.
-                    ret =>!StyxWoW.Me.HasAnyAura("Mark of the Wild", "Gift of the Wild", "Blessing of Kings")
-                        || (SingularSettings.Instance.Druid.BuffRaidWithMotw && (!StyxWoW.Me.Combat || (StyxWoW.Me.Combat && SingularSettings.Instance.Druid.CatRaidRebuff)) 
-                        && !StyxWoW.Me.HasAura("Prowl") 
-                        && Unit.NearbyFriendlyPlayers.Any(unit =>
-                                                    unit.Distance <= 30f &&
-                                                    !unit.Dead && !unit.IsGhost && unit.IsInMyPartyOrRaid &&
-                                                    !unit.HasAnyAura("Mark of the Wild",
-                                                                     "Gift of the Wild",
-                                                                     "Blessing of Kings")))
+                    ret =>!StyxWoW.Me.HasAnyAura("Mark of the Wild", "Gift of the Wild")
+                        || (SingularSettings.Instance.Druid.BuffRaidWithMotw && (!StyxWoW.Me.Combat || (StyxWoW.Me.Combat && SingularSettings.Instance.Druid.CatRaidRebuff))
+                        && !StyxWoW.Me.HasAura("Prowl")
+                        && Unit.NearbyFriendlyPlayers.Any(NeedsMotw))
                 ),
                 // Cast Thorns, added by xyFaded
                 Spell.Cast(
@@ -78,6 +73,21 @@ namespace Singular.ClassSpecific.Druid
                     ret => !StyxWoW.Me.HasAnyAura("Thorns")
                 )
             );
+        }
+
+        private static bool NeedsMotw(WoWPlayer unit)
+        {
+            return unit.Distance <= 30f &&
+                   !unit.Dead && !unit.IsGhost && unit.IsInMyPartyOrRaid && unit.InLineOfSpellSight &&
+                   !unit.HasAnyAura("Mark of the Wild", "Gift of the Wild");
+        }
+
+        private static WoWUnit FindMotwTarget()
+        {
+            if (!StyxWoW.Me.HasAnyAura("Mark of the Wild", "Gift of the Wild"))
+                return StyxWoW.Me;
+
+            return Unit.NearbyFriendlyPlayers.FirstOrDefault(NeedsMotw);
         }
 
         #endregion
