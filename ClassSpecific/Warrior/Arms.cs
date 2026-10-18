@@ -210,7 +210,7 @@ namespace Singular.ClassSpecific.Warrior
                 // WotLK: Blood and Thunder doesn't exist (Cata 4.0.1+), Rend doesn't spread via TC — cast Rend normally
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")),
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -242,11 +242,13 @@ namespace Singular.ClassSpecific.Warrior
 
                 Spell.Cast("Cleave", ret =>
                     // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Cleave") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
                     // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Heroic Strike") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),
@@ -356,7 +358,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Bladestorm", ret => SingularSettings.Instance.Warrior.UseWarriorBladestorm),
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")), // Blood and Thunder = Cata 4.0.1+, position (3,3) WotLK = Trauma
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -387,11 +389,13 @@ namespace Singular.ClassSpecific.Warrior
 
                 Spell.Cast("Cleave", ret =>
                     // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Cleave") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
                     // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Heroic Strike") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),
@@ -508,7 +512,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Bladestorm", ret => SingularSettings.Instance.Warrior.UseWarriorBladestorm),
                         Spell.Cast("Rend", ret => !StyxWoW.Me.CurrentTarget.HasAura("Rend")), // Blood and Thunder = Cata 4.0.1+, position (3,3) WotLK = Trauma
                         Spell.Cast("Thunder Clap"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Mortal Strike"))),
 
                 //Interupts
@@ -540,11 +544,13 @@ namespace Singular.ClassSpecific.Warrior
 
                 Spell.Cast("Cleave", ret =>
                     // Only even think about Cleave for more than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Cleave") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
                     // Only even think about HS for less than 2 mobs. (We're probably best off using melee range)
+                                !SpellManager.IsCurrentSpell("Heroic Strike") &&
                                 Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                                     // WotLK: Incite (Prot T1) is passive +crit, no proc aura to check
                                 CanUseRageDump()),

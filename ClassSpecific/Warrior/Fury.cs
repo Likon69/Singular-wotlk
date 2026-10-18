@@ -154,7 +154,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -197,7 +197,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -210,9 +210,11 @@ namespace Singular.ClassSpecific.Warrior
                     (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
                 // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
+                    !SpellManager.IsCurrentSpell("Cleave") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                     CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
+                    !SpellManager.IsCurrentSpell("Heroic Strike") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                     CanUseRageDump()),
                 // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)
@@ -354,7 +356,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -397,7 +399,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -410,9 +412,11 @@ namespace Singular.ClassSpecific.Warrior
                     (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
                 // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
+                    !SpellManager.IsCurrentSpell("Cleave") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                     CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
+                    !SpellManager.IsCurrentSpell("Heroic Strike") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                     CanUseRageDump()),
                 // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)
@@ -553,7 +557,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.Cast("Bloodthirst"),
                 //rage dump
                         Spell.Cast("Thunder Clap", ret => RagePercent > 50 && Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Radius, 6f) > 3),
-                        Spell.Cast("Heroic Strike", ret => RagePercent > 60),
+                        Spell.Cast("Heroic Strike", ret => !SpellManager.IsCurrentSpell("Heroic Strike") && RagePercent > 60),
                         Movement.CreateMoveToMeleeBehavior(true))),
                 //30-50 support
                 Spell.BuffSelf("Berserker Stance", ret => StyxWoW.Me.Level > 30 && SingularSettings.Instance.Warrior.UseWarriorKeepStance),
@@ -596,7 +600,7 @@ namespace Singular.ClassSpecific.Warrior
                         Spell.BuffSelf("Recklessness", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.BuffSelf("Death Wish", ret => SingularSettings.Instance.Warrior.UseWarriorDpsCooldowns),
                         Spell.Cast("Whirlwind"),
-                        Spell.Cast("Cleave"),
+                        Spell.Cast("Cleave", ret => !SpellManager.IsCurrentSpell("Cleave")),
                         Spell.Cast("Bloodthirst"))),
 
                 // Bloodsurge proc: instant Slam fires before primary fillers
@@ -609,9 +613,11 @@ namespace Singular.ClassSpecific.Warrior
                     (StyxWoW.Me.CurrentTarget.ActiveAuras.ContainsKey("Sunder Armor") && StyxWoW.Me.CurrentTarget.ActiveAuras["Sunder Armor"].StackCount < 5)),
                 // Rage dump: Cleave (2+ mobs) or Heroic Strike (single target) at >= 40 rage
                 Spell.Cast("Cleave", ret =>
+                    !SpellManager.IsCurrentSpell("Cleave") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) >= 2 &&
                     CanUseRageDump()),
                 Spell.Cast("Heroic Strike", ret =>
+                    !SpellManager.IsCurrentSpell("Heroic Strike") &&
                     Clusters.GetClusterCount(StyxWoW.Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 6f) < 2 &&
                     CanUseRageDump()),
                 // Execute: sub-20% filler, lowest priority in WotLK (spell availability enforces HP requirement)

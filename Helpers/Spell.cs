@@ -318,8 +318,12 @@ namespace Singular.Helpers
                     new Action(
                         ret =>
                         {
-                            Logger.Write("Casting " + name + " on " + onUnit(ret).SafeName());
-                            SpellManager.Cast(name, onUnit(ret));
+                            var unit = onUnit(ret);
+                            if (unit == null)
+                                return RunStatus.Failure;
+
+                            Logger.Write("Casting " + name + " on " + unit.SafeName());
+                            SpellManager.Cast(name, unit);
 
                             //WoWSpell spell;
                             //if (SpellManager.Spells.TryGetValue(name, out spell))
@@ -330,6 +334,7 @@ namespace Singular.Helpers
                             //        Thread.Sleep(500);
                             //    }
                             //}
+                            return RunStatus.Success;
                         }),
                         // changed to WaitContinue to avoid using Thread.Sleep as it freezes Wow momentarily because behaviors are now wrapped in framelock. /highvoltz
                     new WaitContinue(TimeSpan.FromMilliseconds(500), ret => 
@@ -417,8 +422,13 @@ namespace Singular.Helpers
                     new Action(
                         ret =>
                         {
-                            Logger.Write("Casting " + spellId + " on " + onUnit(ret).SafeName());
-                            SpellManager.Cast(spellId, onUnit(ret));
+                            var unit = onUnit(ret);
+                            if (unit == null)
+                                return RunStatus.Failure;
+
+                            Logger.Write("Casting " + spellId + " on " + unit.SafeName());
+                            SpellManager.Cast(spellId, unit);
+                            return RunStatus.Success;
                         }))
                 );
         }
