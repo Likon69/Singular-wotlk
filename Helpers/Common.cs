@@ -14,6 +14,9 @@ namespace Singular.Helpers
 {
     internal static class Common
     {
+        // Last ToggleAttack call; IsAutoAttacking lags behind it, so nested calls in one rotation would undo each other.
+        private static DateTime _lastToggleAttack = DateTime.MinValue;
+
         /// <summary>
         ///  Creates a behavior to start auto attacking to current target.
         /// </summary>
@@ -28,9 +31,11 @@ namespace Singular.Helpers
 
             return new PrioritySelector(
                 new Decorator(
-                    ret => !StyxWoW.Me.IsAutoAttacking && StyxWoW.Me.AutoRepeatingSpellId != spellIdAutoShot,
+                    ret => !StyxWoW.Me.IsAutoAttacking && StyxWoW.Me.AutoRepeatingSpellId != spellIdAutoShot &&
+                           DateTime.Now - _lastToggleAttack > TimeSpan.FromSeconds(1),
                     new Action(ret =>
                         {
+                            _lastToggleAttack = DateTime.Now;
                             StyxWoW.Me.ToggleAttack();
                             return RunStatus.Failure;
                         })),

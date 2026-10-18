@@ -284,6 +284,11 @@ namespace Singular.ClassSpecific.Druid
                            StyxWoW.Me.ComboPoints > 1 && StyxWoW.Me.CurrentTarget.HealthPercent < 20),
                 Spell.Buff("Rake", true, ret => StyxWoW.Me.CurrentTarget),
                 Spell.Cast("Mangle (Cat)"),
+                // Low-level cat: Rip finisher and Claw builder. Energy gates keep rejected casts from repeating every tick.
+                Spell.Cast("Rip",
+                    ret => StyxWoW.Me.ComboPoints == 5 && !SpellManager.HasSpell("Ferocious Bite") &&
+                           !StyxWoW.Me.CurrentTarget.HasMyAura("Rip") && CurrentEnergy >= 30),
+                Spell.Cast("Claw", ret => !SpellManager.HasSpell("Mangle (Cat)") && CurrentEnergy >= 45),
                 Movement.CreateMoveToMeleeBehavior(true)
                 );
         }
@@ -1203,6 +1208,13 @@ return Action.RAKE;*/
                                   SpellManager.HasSpell("Tiger's Fury") &&
                                   SpellManager.Spells["Tiger's Fury"].CooldownTimeLeft().TotalSeconds > 6),
                 Helpers.Common.CreateAutoAttack(true),
+                // Leveling cat without Mangle: use the simple rotation and wait out the GCD instead of resending casts.
+                new Decorator(
+                    ret => !SpellManager.HasSpell("Mangle (Cat)"),
+                    new PrioritySelector(
+                        new Decorator(ret => Spell.IsGlobalCooldown(), new ActionAlwaysSucceed()),
+                        CreateFeralLevel2046Combat(),
+                        new ActionAlwaysSucceed())),
                 /*AOE*/
                 new Decorator(
                     ret => EnemyUnits.Count >=
