@@ -173,7 +173,7 @@ namespace Singular.ClassSpecific.Druid
                 Spell.BuffSelf("Cat Form"),
                 // Elite quest mobs are worth a stealth opener: Ravage from behind, Pounce otherwise.
                 new Decorator(
-                    ret => StyxWoW.Me.CurrentTarget.Elite,
+                    ret => StyxWoW.Me.CurrentTarget != null && StyxWoW.Me.CurrentTarget.Elite,
                     new PrioritySelector(
                         Spell.BuffSelf("Prowl", ret => SpellManager.HasSpell("Pounce")),
                         Spell.Cast("Ravage", ret => StyxWoW.Me.CurrentTarget.MeIsBehind),
@@ -209,7 +209,7 @@ namespace Singular.ClassSpecific.Druid
                 Helpers.Common.CreateInterruptSpellCast(ret => StyxWoW.Me.CurrentTarget),
 
                 // Defensive spells. Barkskin works in forms and is off the GCD, so it goes out whenever we are being hit.
-                Spell.BuffSelf("Barkskin", ret => StyxWoW.Me.CurrentTarget.IsTargetingMeOrPet),
+                Spell.BuffSelf("Barkskin", ret => StyxWoW.Me.CurrentTarget != null && StyxWoW.Me.CurrentTarget.IsTargetingMeOrPet),
                 Spell.BuffSelf("Survival Instincts", ret => StyxWoW.Me.HealthPercent < Settings.SurvivalInstinctsHealth),
                 Spell.BuffSelf("Innervate", ret => ManaPercent <= Settings.InnervateMana),
 
@@ -218,13 +218,14 @@ namespace Singular.ClassSpecific.Druid
                     CreateFeralLevel1020Combat()),
 
                 // Without King of the Jungle, Tiger's Fury goes out as we engage a fresh target. With it, only when
-                // the energy it restores (20 per rank) fits under the 100 cap: below 40 energy at 3/3.
+                // the energy it restores fits under the 100 cap. KotJ restores 20 energy per rank (60 at 3/3), so
+                // at 3/3 that is below 40 energy.
                 Spell.BuffSelf("Tiger's Fury",
                     ret =>
                     {
-                        if (StyxWoW.Me.Shapeshift != ShapeshiftForm.Cat)
+                        if (StyxWoW.Me.CurrentTarget == null || StyxWoW.Me.Shapeshift != ShapeshiftForm.Cat)
                             return false;
-                        var kingOfTheJungle = TalentRank(2, "King of the Jungle");
+                        var kingOfTheJungle = TalentRank("King of the Jungle");
                         return StyxWoW.Me.CurrentTarget.Distance < Spell.MeleeRange &&
                                (kingOfTheJungle == 0
                                     ? StyxWoW.Me.CurrentTarget.HealthPercent > 90
@@ -239,7 +240,8 @@ namespace Singular.ClassSpecific.Druid
                 Spell.Cast("Feral Charge - Cat"),
                 // Dash backs up Feral Charge for catching a fleeing mob.
                 Spell.BuffSelf("Dash",
-                    ret => StyxWoW.Me.CurrentTarget.Fleeing && StyxWoW.Me.CurrentTarget.Distance > Spell.MeleeRange &&
+                    ret => StyxWoW.Me.CurrentTarget != null && StyxWoW.Me.CurrentTarget.Fleeing &&
+                           StyxWoW.Me.CurrentTarget.Distance > Spell.MeleeRange &&
                            Spell.GetSpellCooldown("Feral Charge - Cat") > TimeSpan.Zero),
                 CreateFeralCatLevelingCombat())),
                 Movement.CreateMoveToMeleeBehavior(true)
@@ -282,23 +284,26 @@ namespace Singular.ClassSpecific.Druid
         // Single-target leveling cat, also used by dungeon cats without Mangle: Rake only on targets that outlive
         // its 9 sec bleed, Savage Roar (75) before Ferocious Bite, Ferocious Bite at 5 combo points (no finisher
         // before it is trained at 32), Mangle from the front, Claw until Mangle is learned.
+        // Guarded on a target: the target can die mid-tick, and an exception here skips the movement at the end.
         private static Composite CreateFeralCatLevelingCombat()
         {
-            return new PrioritySelector(
-                new Action(ret =>
-                    {
-                        TrackKillSpeed();
-                        return RunStatus.Failure;
-                    }),
-                Spell.Buff("Rake", true, ret => StyxWoW.Me.CurrentTarget,
-                    ret => SecondsToKill(StyxWoW.Me.CurrentTarget) > 9 && HasPowerFor("Rake")),
-                Spell.Cast("Savage Roar", ret => StyxWoW.Me,
-                    ret => StyxWoW.Me.ComboPoints > 0 && NeedsSavageRoar() && HasPowerFor("Savage Roar")),
-                Spell.Cast("Ferocious Bite", ret => StyxWoW.Me.ComboPoints == 5 && HasPowerFor("Ferocious Bite")),
-                Spell.Cast("Mangle (Cat)", ret => HasPowerFor("Mangle (Cat)")),
-                Spell.Cast("Claw", ret => !SpellManager.HasSpell("Mangle (Cat)") && HasPowerFor("Claw")),
-                Movement.CreateMoveToMeleeBehavior(true)
-                );
+            return new Decorator(
+                ret => StyxWoW.Me.CurrentTarget != null,
+                new PrioritySelector(
+                    new Action(ret =>
+                        {
+                            TrackKillSpeed();
+                            return RunStatus.Failure;
+                        }),
+                    Spell.Buff("Rake", true, ret => StyxWoW.Me.CurrentTarget,
+                        ret => SecondsToKill(StyxWoW.Me.CurrentTarget) > 9 && CanAfford(40)),
+                    Spell.Cast("Savage Roar", ret => StyxWoW.Me,
+                        ret => StyxWoW.Me.ComboPoints > 0 && NeedsSavageRoar() && CanAfford(25)),
+                    Spell.Cast("Ferocious Bite", ret => StyxWoW.Me.ComboPoints == 5 && CanAfford(35)),
+                    Spell.Cast("Mangle (Cat)", ret => CanAfford(45)),
+                    Spell.Cast("Claw", ret => !SpellManager.HasSpell("Mangle (Cat)") && CanAfford(45)),
+                    Movement.CreateMoveToMeleeBehavior(true)
+                    ));
         }
 
         // Solo AoE on 3+ mobs. From 71: pool to 90 energy for Berserk, Rake into Savage Roar when the pack outlives
@@ -320,15 +325,15 @@ namespace Singular.ClassSpecific.Druid
                             ret => SpellManager.HasSpell("Savage Roar") && !StyxWoW.Me.HasAura("Savage Roar") &&
                                    PackOutlivesSwipes(5),
                             new PrioritySelector(
-                                Spell.Cast("Rake", ret => StyxWoW.Me.ComboPoints == 0 && HasPowerFor("Rake")),
+                                Spell.Cast("Rake", ret => StyxWoW.Me.ComboPoints == 0 && CanAfford(40)),
                                 Spell.Cast("Savage Roar", ret => StyxWoW.Me,
-                                    ret => StyxWoW.Me.ComboPoints > 0 && HasPowerFor("Savage Roar")))),
-                        Spell.Cast("Swipe (Cat)", ret => HasPowerFor("Swipe (Cat)")),
-                        // Furor keeps 20 energy per rank on the way back into Cat Form; with less than the 45 we
-                        // return at, every weave would come back to an empty bar.
+                                    ret => StyxWoW.Me.ComboPoints > 0 && CanAfford(25)))),
+                        Spell.Cast("Swipe (Cat)", ret => CanAfford(50)),
+                        // Furor keeps energy through the shift back to cat. Wowhead lists "up to 100" at max rank;
+                        // 20 per rank is an assumption, so the weave needs 3+ ranks to refill to the 45 we return at.
                         Spell.BuffSelf("Dire Bear Form",
                             ret => !StyxWoW.Me.HasAura("Berserk") && CurrentEnergy < 30 &&
-                                   TalentRank(3, "Furor") * 20 >= 45))),
+                                   TalentRank("Furor") * 20 >= 45))),
                 Movement.CreateMoveToMeleeBehavior(true),
                 // Pooling energy or waiting on it: don't fall through to the single-target rotation.
                 new ActionAlwaysSucceed()
@@ -341,7 +346,7 @@ namespace Singular.ClassSpecific.Druid
             return new PrioritySelector(
                 Spell.BuffSelf("Dire Bear Form"),
                 Spell.BuffSelf("Bear Form", ret => !SpellManager.HasSpell("Dire Bear Form")),
-                Spell.Cast("Swipe (Bear)", ret => HasPowerFor("Swipe (Bear)")),
+                Spell.Cast("Swipe (Bear)", ret => StyxWoW.Me.CurrentRage >= 20),
                 Movement.CreateMoveToMeleeBehavior(true),
                 new ActionAlwaysSucceed()
                 );
@@ -406,14 +411,15 @@ namespace Singular.ClassSpecific.Druid
             return pack.Count > 0 && pack.Average(u => (double)u.CurrentHealth) > swipes * 2.5 * averageHit;
         }
 
-        // IsUsableSpell flags a missing energy or rage cost and already counts Clearcasting, Berserk and talent cost
-        // cuts. Gating on it waits for energy instead of resending a cast the client rejects every tick.
-        private static bool HasPowerFor(string spell)
+        // Energy check against the spell's cost. IsUsableSpell does not report energy shortfalls on this client, so
+        // Claw was resent every tick while energy sat below 45. Clearcasting makes the next cat ability free and
+        // Berserk halves its cost.
+        private static bool CanAfford(int energyCost)
         {
-            return SpellManager.HasSpell(spell) &&
-                   Lua.GetReturnVal<int>(string.Format(
-                       "local _, noPower = IsUsableSpell((GetSpellInfo({0}))) return noPower and 0 or 1",
-                       SpellManager.Spells[spell].Id), 0) == 1;
+            if (StyxWoW.Me.ActiveAuras.ContainsKey("Clearcasting"))
+                return true;
+
+            return CurrentEnergy >= (StyxWoW.Me.ActiveAuras.ContainsKey("Berserk") ? energyCost / 2 : energyCost);
         }
 
         // Mobs attacking us within Swipe reach.
@@ -438,12 +444,12 @@ namespace Singular.ClassSpecific.Druid
             get { return Lua.GetReturnVal<int>("return math.floor(UnitPower(\"player\", 0) * 100 / math.max(UnitPowerMax(\"player\", 0), 1))", 0); }
         }
 
-        // Talent rank looked up by name within a tab (2 Feral, 3 Restoration).
-        private static int TalentRank(int tab, string name)
+        // Talent rank looked up by name across all three trees, so the tab a talent sits in doesn't matter.
+        private static int TalentRank(string name)
         {
             return Lua.GetReturnVal<int>(string.Format(
-                "for i = 1, GetNumTalents({0}) do local name, _, _, _, rank = GetTalentInfo({0}, i) " +
-                "if name == \"{1}\" then return rank end end return 0", tab, name), 0);
+                "for t = 1, 3 do for i = 1, GetNumTalents(t) do local n, _, _, _, rank = GetTalentInfo(t, i) " +
+                "if n == \"{0}\" then return rank end end end return 0", name), 0);
         }
 
         #endregion
