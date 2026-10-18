@@ -162,6 +162,10 @@ namespace Singular.ClassSpecific.Druid
         {
             return new PrioritySelector(
                 Safers.EnsureTarget(),
+                // Cat Form is learned at 20; the first feral talent at 10 lands here, so keep casting Wrath/Moonfire until then.
+                new Decorator(
+                    ret => Settings.CasterBeforeCatForm && !SpellManager.HasSpell("Cat Form"),
+                    Lowbie.CreateLowbieDruidPull()),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
 
@@ -198,6 +202,9 @@ namespace Singular.ClassSpecific.Druid
         {
             return new PrioritySelector(
                 Safers.EnsureTarget(),
+                new Decorator(
+                    ret => Settings.CasterBeforeCatForm && !SpellManager.HasSpell("Cat Form"),
+                    Lowbie.CreateLowbieDruidCombat()),
                 Common.CreateNonRestoHeals(),
                 Spell.BuffSelf("Cat Form"),
                 Movement.CreateMoveToLosBehavior(),

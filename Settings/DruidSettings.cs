@@ -299,6 +299,13 @@ namespace Singular.Settings
         public int SurvivalInstinctsHealth { get; set; }
 
         [Setting]
+        [DefaultValue(true)]
+        [Category("Feral")]
+        [DisplayName("Caster Rotation Before Cat Form")]
+        [Description("Until Cat Form is learned at level 20, pull and fight with the lowbie caster rotation (Wrath, Moonfire, Rejuvenation) instead of running into melee without Cat Form.")]
+        public bool CasterBeforeCatForm { get; set; }
+
+        [Setting]
         [DefaultValue(30)]
         [Category("Feral PvP")]
         [DisplayName("Frenzied Regeneration Health")]
