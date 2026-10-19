@@ -162,6 +162,9 @@ namespace Singular.ClassSpecific.Druid
         {
             return new PrioritySelector(
                 Safers.EnsureTarget(),
+                new Decorator(
+                    ret => !SpellManager.HasSpell("Cat Form"),
+                    Lowbie.CreateLowbieDruidPull()),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
 
@@ -199,6 +202,9 @@ namespace Singular.ClassSpecific.Druid
             return new PrioritySelector(
                 Safers.EnsureTarget(),
                 Common.CreateNonRestoHeals(),
+                new Decorator(
+                    ret => !SpellManager.HasSpell("Cat Form"),
+                    Lowbie.CreateLowbieDruidCombat()),
                 Spell.BuffSelf("Cat Form"),
                 Movement.CreateMoveToLosBehavior(),
                 Movement.CreateFaceTargetBehavior(),
